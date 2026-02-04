@@ -58,6 +58,32 @@ async def get_client_details(search: str) -> dict:
 
 
 @tool
+async def get_client_by_id(client_id: int) -> dict:
+    """Get full details of a specific client by their user ID, including membership information.
+
+    Args:
+        client_id: The user ID of the client
+
+    Use this tool when:
+    - You already know the client's ID and need their full details
+    - User asks for membership details of a specific client
+    - User asks about a client's subscription/plan information
+    - You need to check if a client has an active membership
+
+    Returns client data with:
+    - Basic info (name, email, phone, status)
+    - Active membership details (plan, dates, payment status, days remaining)
+    - Membership history
+    """
+    client = get_api_client()
+    try:
+        response = await client.get(f"/users/{client_id}")
+        return response
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@tool
 async def get_expiring_memberships() -> dict:
     """Get list of memberships expiring in the next 7 days.
 

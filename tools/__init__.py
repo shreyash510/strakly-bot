@@ -1,6 +1,6 @@
 from .base import APIClient, set_api_client, get_api_client
-from .clients import get_clients_stats, get_clients_list, get_client_details, get_expiring_memberships
-from .memberships import get_client_membership, get_membership_stats
+from .clients import get_clients_stats, get_clients_list, get_client_details, get_client_by_id, get_expiring_memberships
+from .memberships import get_client_membership, get_membership_stats, get_active_membership_clients
 from .attendance import get_attendance_today, get_attendance_stats
 from .revenue import get_revenue_stats, get_membership_sales
 from .trainers import get_trainers_list, get_trainers_stats
@@ -14,7 +14,11 @@ __all__ = [
     "get_clients_stats",
     "get_clients_list",
     "get_client_details",
+    "get_client_by_id",
     "get_expiring_memberships",
+    "get_client_membership",
+    "get_membership_stats",
+    "get_active_membership_clients",
     "get_attendance_today",
     "get_attendance_stats",
     "get_revenue_stats",
