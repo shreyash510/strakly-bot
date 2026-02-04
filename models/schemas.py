@@ -5,6 +5,7 @@ from typing import Optional
 class ChatRequest(BaseModel):
     message: str
     conversation_id: Optional[str] = None
+    branch_id: Optional[int] = None
 
 
 class ChatResponse(BaseModel):

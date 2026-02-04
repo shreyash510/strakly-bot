@@ -63,6 +63,7 @@ async def chat(
         token=token,
         tenant=tenant,
         conversation_id=request.conversation_id,
+        branch_id=request.branch_id,
     )
 
     return ChatResponse(
