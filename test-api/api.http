@@ -1,0 +1,67 @@
+@baseUrl = http://localhost:8001
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5Ac3RyYWtseS5jb20iLCJuYW1lIjoiYWRtaW4gYmhhaSIsInJvbGUiOiJhZG1pbiIsImd5bUlkIjoxLCJ0ZW5hbnRTY2hlbWFOYW1lIjoidGVuYW50XzEiLCJicmFuY2hJZCI6bnVsbCwiaXNBZG1pbiI6dHJ1ZSwiaWF0IjoxNzcwMTcxODc4LCJleHAiOjE3NzA3NzY2Nzh9.e-ZVtMsddUKtU20kIkMmeEeIVoH99ifFC3G2dUCmBYQ
+
+### Health Check - Root
+GET {{baseUrl}}/
+
+### Health Check
+GET {{baseUrl}}/health
+
+### Chat - Ask about clients
+POST {{baseUrl}}/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "message": "How many active clients do we have?"
+}
+
+### Chat - Ask about revenue
+POST {{baseUrl}}/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "message": "Show me the revenue stats for this month"
+}
+
+### Chat - Ask about attendance
+POST {{baseUrl}}/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "message": "Who checked in today?"
+}
+
+### Chat - Ask about trainers
+POST {{baseUrl}}/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "message": "List all trainers and their stats"
+}
+
+### Chat - Ask about expiring memberships
+POST {{baseUrl}}/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "message": "Which memberships are expiring soon?"
+}
+
+### Chat - With conversation ID (for context)
+POST {{baseUrl}}/chat
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "message": "Tell me more details",
+  "conversation_id": "your-conversation-id-here"
+}
+
+### Delete Conversation
+DELETE {{baseUrl}}/chat/your-conversation-id-here
+Authorization: Bearer {{token}}

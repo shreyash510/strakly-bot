@@ -13,7 +13,7 @@ async def get_gym_info() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/gyms/me")
+        response = await client.get("/gyms/profile")
         return response
     except Exception as e:
         return {"error": str(e)}
@@ -31,7 +31,10 @@ async def get_branches_info() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/branches")
+        # First get gym profile to get gym_id
+        profile = await client.get("/gyms/profile")
+        gym_id = profile.get("id", 1) if isinstance(profile, dict) else 1
+        response = await client.get(f"/gyms/{gym_id}/branches")
         return response
     except Exception as e:
         return {"error": str(e)}

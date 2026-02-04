@@ -14,59 +14,42 @@ async def get_clients_stats() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/clients/stats")
+        # Use dashboard endpoint which includes client stats
+        response = await client.get("/dashboard/admin")
         return response
     except Exception as e:
         return {"error": str(e)}
 
 
 @tool
-async def get_clients_list(
-    status: str = None,
-    search: str = None,
-    limit: int = 10,
-) -> dict:
-    """Get list of clients/members with optional filters.
+async def get_clients_list() -> dict:
+    """Get list of clients/members.
 
     Use this tool when user asks about:
     - List of members
-    - Search for a specific member
-    - Members with specific status
-
-    Args:
-        status: Filter by status (active, inactive, expired)
-        search: Search by name or email
-        limit: Maximum number of results (default 10)
+    - Show me all clients
+    - Who are my members
     """
     client = get_api_client()
-    params = {"limit": limit}
-    if status:
-        params["status"] = status
-    if search:
-        params["search"] = search
-
     try:
-        response = await client.get("/clients", params)
+        response = await client.get("/users", {"role": "client", "limit": 20})
         return response
     except Exception as e:
         return {"error": str(e)}
 
 
 @tool
-async def get_expiring_memberships(days: int = 7) -> dict:
-    """Get list of memberships that are expiring soon.
+async def get_expiring_memberships() -> dict:
+    """Get list of memberships expiring in the next 7 days.
 
     Use this tool when user asks about:
     - Expiring memberships
     - Members whose subscription is ending
     - Renewals needed
-
-    Args:
-        days: Number of days to look ahead (default 7)
     """
     client = get_api_client()
     try:
-        response = await client.get("/memberships/expiring", {"days": days})
+        response = await client.get("/memberships/expiring", {"days": 7})
         return response
     except Exception as e:
         return {"error": str(e)}

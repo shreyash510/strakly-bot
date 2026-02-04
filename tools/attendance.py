@@ -21,21 +21,18 @@ async def get_attendance_today() -> dict:
 
 
 @tool
-async def get_attendance_stats(period: str = "week") -> dict:
-    """Get attendance statistics for a given period.
+async def get_attendance_stats() -> dict:
+    """Get attendance statistics.
 
     Use this tool when user asks about:
     - Attendance trends
     - Weekly/monthly attendance
     - Peak hours
     - Average daily attendance
-
-    Args:
-        period: Time period - 'today', 'week', 'month' (default 'week')
     """
     client = get_api_client()
     try:
-        response = await client.get("/attendance/stats", {"period": period})
+        response = await client.get("/attendance/stats")
         return response
     except Exception as e:
         return {"error": str(e)}

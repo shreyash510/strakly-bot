@@ -37,6 +37,7 @@ def decode_token(token: str) -> TenantContext:
             token,
             config.JWT_SECRET,
             algorithms=[config.JWT_ALGORITHM],
+            options={"verify_sub": False},
         )
 
         return TenantContext(

@@ -3,26 +3,18 @@ from .base import get_api_client
 
 
 @tool
-async def get_enquiries_list(status: str = None, limit: int = 10) -> dict:
-    """Get list of enquiries/leads.
+async def get_enquiries_list() -> dict:
+    """Get list of enquiries/leads (users with onboarding/pending status).
 
     Use this tool when user asks about:
     - Enquiries or leads
     - Pending enquiries
     - New leads
     - Follow-ups needed
-
-    Args:
-        status: Filter by status (pending, contacted, converted, closed)
-        limit: Maximum number of results (default 10)
     """
     client = get_api_client()
-    params = {"limit": limit}
-    if status:
-        params["status"] = status
-
     try:
-        response = await client.get("/enquiries", params)
+        response = await client.get("/dashboard/admin/new-inquiries", {"limit": 10})
         return response
     except Exception as e:
         return {"error": str(e)}
@@ -40,7 +32,8 @@ async def get_enquiries_stats() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/enquiries/stats")
+        # Dashboard includes enquiry stats
+        response = await client.get("/dashboard/admin")
         return response
     except Exception as e:
         return {"error": str(e)}

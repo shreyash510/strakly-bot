@@ -3,25 +3,17 @@ from .base import get_api_client
 
 
 @tool
-async def get_trainers_list(status: str = None, limit: int = 10) -> dict:
+async def get_trainers_list() -> dict:
     """Get list of trainers.
 
     Use this tool when user asks about:
     - List of trainers
     - How many trainers do I have?
     - Trainer information
-
-    Args:
-        status: Filter by status (active, inactive)
-        limit: Maximum number of results (default 10)
     """
     client = get_api_client()
-    params = {"limit": limit}
-    if status:
-        params["status"] = status
-
     try:
-        response = await client.get("/trainers", params)
+        response = await client.get("/users", {"role": "trainer", "limit": 20})
         return response
     except Exception as e:
         return {"error": str(e)}
@@ -38,7 +30,8 @@ async def get_trainers_stats() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/trainers/stats")
+        # Get dashboard which includes trainer stats
+        response = await client.get("/dashboard/admin")
         return response
     except Exception as e:
         return {"error": str(e)}
