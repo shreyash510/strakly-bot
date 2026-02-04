@@ -22,6 +22,15 @@ from tools import (
     get_enquiries_stats,
     get_gym_info,
     get_branches_info,
+    get_current_branch,
+    get_managers_list,
+    get_staff_list,
+    get_staff_details,
+    get_branch_admins_list,
+    get_staff_salary,
+    get_salary_stats,
+    get_pending_salaries,
+    get_all_salaries,
 )
 from auth import TenantContext
 import uuid
@@ -46,6 +55,15 @@ ALL_TOOLS = [
     get_enquiries_stats,
     get_gym_info,
     get_branches_info,
+    get_current_branch,
+    get_managers_list,
+    get_staff_list,
+    get_staff_details,
+    get_branch_admins_list,
+    get_staff_salary,
+    get_salary_stats,
+    get_pending_salaries,
+    get_all_salaries,
 ]
 
 # Tool name to function mapping
@@ -70,11 +88,12 @@ async def process_chat(
     token: str,
     tenant: TenantContext,
     conversation_id: str = None,
+    branch_id: int = None,
 ) -> dict:
     """Process a chat message and return response"""
 
-    # Set API client with user's token
-    set_api_client(token)
+    # Set API client with user's token and branch
+    set_api_client(token, branch_id)
 
     # Get or create conversation
     if not conversation_id:
