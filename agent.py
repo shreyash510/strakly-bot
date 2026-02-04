@@ -6,6 +6,7 @@ from tools import (
     set_api_client,
     get_clients_stats,
     get_clients_list,
+    get_client_details,
     get_expiring_memberships,
     get_attendance_today,
     get_attendance_stats,
@@ -25,6 +26,7 @@ import uuid
 ALL_TOOLS = [
     get_clients_stats,
     get_clients_list,
+    get_client_details,
     get_expiring_memberships,
     get_attendance_today,
     get_attendance_stats,
