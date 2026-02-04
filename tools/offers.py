@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client
+from .base import get_api_client, get_current_branch_id
 
 
 @tool
@@ -77,3 +77,66 @@ async def validate_offer_code(code: str) -> dict:
         return response
     except Exception as e:
         return {"error": str(e)}
+
+
+@tool
+async def create_offer(
+    name: str,
+    discount_percentage: int,
+    start_date: str,
+    end_date: str,
+    code: str = None,
+    description: str = None,
+) -> dict:
+    """Create a new discount offer/promotion.
+
+    IMPORTANT: Only call this tool AFTER showing confirmation to the user and getting their approval.
+
+    Args:
+        name: Name of the offer (required)
+        discount_percentage: Discount percentage, e.g., 10, 20, 50 (required)
+        start_date: Start date in YYYY-MM-DD format (required)
+        end_date: End date in YYYY-MM-DD format (required)
+        code: Offer code like "NEWYEAR20" (optional, auto-generated if not provided)
+        description: Description of the offer (optional)
+
+    Returns:
+        Success response with created offer details, or error message
+    """
+    client = get_api_client()
+    try:
+        # Generate code from name if not provided
+        offer_code = code or name.upper().replace(" ", "")
+
+        data = {
+            "code": offer_code,
+            "name": name,
+            "description": description or "",
+            "discountType": "percentage",
+            "discountValue": discount_percentage,
+            "validFrom": start_date,
+            "validTo": end_date,
+            "applicableToAll": True,
+            "isActive": True,
+        }
+
+        # Add branch ID if available
+        branch_id = get_current_branch_id()
+        url = f"/offers?branchId={branch_id}" if branch_id else "/offers"
+
+        response = await client.post(url, data)
+
+        return {
+            "success": True,
+            "message": f"Offer '{name}' created successfully",
+            "offer": {
+                "id": response.get("id"),
+                "name": response.get("name"),
+                "code": response.get("code"),
+                "discount": f"{discount_percentage}%",
+                "validFrom": start_date,
+                "validTo": end_date,
+            },
+        }
+    except Exception as e:
+        return {"error": str(e), "success": False}

@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client
+from .base import get_api_client, get_current_branch_id
 
 
 @tool
@@ -39,3 +39,103 @@ async def get_facilities_list() -> dict:
         return response
     except Exception as e:
         return {"error": str(e)}
+
+
+@tool
+async def create_amenity(
+    name: str,
+    description: str = None,
+) -> dict:
+    """Create a new amenity (e.g., Parking, Locker, Shower, WiFi).
+
+    IMPORTANT: Only call this tool AFTER showing confirmation to the user and getting their approval.
+
+    Args:
+        name: Name of the amenity (required)
+        description: Description of the amenity (optional)
+
+    Returns:
+        Success response with created amenity details, or error message
+    """
+    client = get_api_client()
+    try:
+        # Generate code from name
+        code = name.upper().replace(" ", "_")
+
+        data = {
+            "name": name,
+            "code": code,
+            "isActive": True,
+        }
+
+        if description:
+            data["description"] = description
+
+        # Add branch ID if available
+        branch_id = get_current_branch_id()
+        url = f"/amenities?branchId={branch_id}" if branch_id else "/amenities"
+
+        response = await client.post(url, data)
+
+        return {
+            "success": True,
+            "message": f"Amenity '{name}' created successfully",
+            "amenity": {
+                "id": response.get("id"),
+                "name": response.get("name"),
+                "code": response.get("code"),
+                "description": response.get("description"),
+            },
+        }
+    except Exception as e:
+        return {"error": str(e), "success": False}
+
+
+@tool
+async def create_facility(
+    name: str,
+    description: str = None,
+) -> dict:
+    """Create a new facility (e.g., Cardio Zone, Weight Area, Yoga Room, Swimming Pool).
+
+    IMPORTANT: Only call this tool AFTER showing confirmation to the user and getting their approval.
+
+    Args:
+        name: Name of the facility (required)
+        description: Description of the facility (optional)
+
+    Returns:
+        Success response with created facility details, or error message
+    """
+    client = get_api_client()
+    try:
+        # Generate code from name
+        code = name.upper().replace(" ", "_")
+
+        data = {
+            "name": name,
+            "code": code,
+            "isActive": True,
+        }
+
+        if description:
+            data["description"] = description
+
+        # Add branch ID if available
+        branch_id = get_current_branch_id()
+        url = f"/facilities?branchId={branch_id}" if branch_id else "/facilities"
+
+        response = await client.post(url, data)
+
+        return {
+            "success": True,
+            "message": f"Facility '{name}' created successfully",
+            "facility": {
+                "id": response.get("id"),
+                "name": response.get("name"),
+                "code": response.get("code"),
+                "description": response.get("description"),
+            },
+        }
+    except Exception as e:
+        return {"error": str(e), "success": False}

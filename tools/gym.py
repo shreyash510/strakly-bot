@@ -79,3 +79,70 @@ async def get_current_branch() -> dict:
         return {"branchId": branch_id, "message": f"Branch ID {branch_id} is selected but details not found."}
     except Exception as e:
         return {"branchId": branch_id, "error": str(e)}
+
+
+@tool
+async def create_branch(
+    name: str,
+    code: str,
+    phone: str = None,
+    email: str = None,
+    address: str = None,
+    city: str = None,
+    state: str = None,
+) -> dict:
+    """Create a new branch for the gym.
+
+    IMPORTANT: Only call this tool AFTER showing confirmation to the user and getting their approval.
+
+    Args:
+        name: Name of the branch (required)
+        code: Unique branch code like "BR001" (required)
+        phone: Branch phone number (optional)
+        email: Branch email (optional)
+        address: Branch address (optional)
+        city: City (optional)
+        state: State (optional)
+
+    Returns:
+        Success response with created branch details, or error message
+    """
+    client = get_api_client()
+    try:
+        # Get gym ID first
+        profile = await client.get("/gyms/profile")
+        gym_id = profile.get("id", 1) if isinstance(profile, dict) else 1
+
+        data = {
+            "name": name,
+            "code": code,
+            "isActive": True,
+        }
+
+        # Add optional fields
+        if phone:
+            data["phone"] = phone
+        if email:
+            data["email"] = email
+        if address:
+            data["address"] = address
+        if city:
+            data["city"] = city
+        if state:
+            data["state"] = state
+
+        response = await client.post(f"/gyms/{gym_id}/branches", data)
+
+        return {
+            "success": True,
+            "message": f"Branch '{name}' created successfully",
+            "branch": {
+                "id": response.get("id"),
+                "name": response.get("name"),
+                "code": response.get("code"),
+                "phone": response.get("phone"),
+                "city": response.get("city"),
+            },
+        }
+    except Exception as e:
+        return {"error": str(e), "success": False}
