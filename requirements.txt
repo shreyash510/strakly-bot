@@ -2,7 +2,6 @@ fastapi
 uvicorn[standard]
 langchain
 langchain-openai
-langchain-groq
 langchain-core
 httpx
 python-dotenv
