@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client
+from .base import get_api_client, get_current_branch_id
 
 
 @tool
@@ -58,3 +58,61 @@ async def get_plan_details(plan_id: int) -> dict:
         return response
     except Exception as e:
         return {"error": str(e)}
+
+
+@tool
+async def create_plan(
+    name: str,
+    price: float,
+    duration: int,
+    description: str = None,
+    features: str = None,
+) -> dict:
+    """Create a new membership plan.
+
+    IMPORTANT: Only call this tool AFTER showing confirmation to the user and getting their approval.
+
+    Args:
+        name: Name of the plan (required)
+        price: Price in INR (required)
+        duration: Duration in days (required)
+        description: Description of the plan (optional)
+        features: Comma-separated features like "Personal trainer, Diet plan, Locker" (optional)
+
+    Returns:
+        Success response with created plan details, or error message
+    """
+    client = get_api_client()
+    try:
+        # Generate code from name
+        code = name.lower().replace(" ", "-")
+
+        data = {
+            "code": code,
+            "name": name,
+            "price": price,
+            "durationValue": duration,
+            "durationType": "day",
+            "description": description or "",
+            "features": features.split(",") if features else [],
+        }
+
+        # Add branch ID if available
+        branch_id = get_current_branch_id()
+        url = f"/plans?branchId={branch_id}" if branch_id else "/plans"
+
+        response = await client.post(url, data)
+
+        return {
+            "success": True,
+            "message": f"Plan '{name}' created successfully",
+            "plan": {
+                "id": response.get("id"),
+                "name": response.get("name"),
+                "price": response.get("price"),
+                "duration": duration,
+                "description": response.get("description"),
+            },
+        }
+    except Exception as e:
+        return {"error": str(e), "success": False}

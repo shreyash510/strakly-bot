@@ -1,5 +1,13 @@
 from langchain_core.tools import tool
-from .base import get_api_client
+from .base import get_api_client, get_current_branch_id
+import secrets
+import string
+
+
+def generate_password(length: int = 12) -> str:
+    """Generate a secure random password"""
+    alphabet = string.ascii_letters + string.digits
+    return ''.join(secrets.choice(alphabet) for _ in range(length))
 
 
 @tool
@@ -131,3 +139,75 @@ async def get_expiring_memberships() -> dict:
         return response
     except Exception as e:
         return {"error": str(e)}
+
+
+@tool
+async def create_client(
+    name: str,
+    email: str,
+    phone: str = None,
+    gender: str = None,
+    address: str = None,
+    city: str = None,
+) -> dict:
+    """Create a new client/member with the provided details.
+
+    IMPORTANT: Only call this tool AFTER showing confirmation to the user and getting their approval.
+
+    Args:
+        name: Full name of the client (required)
+        email: Email address (required)
+        phone: Phone number (optional)
+        gender: Gender - male, female, or other (optional)
+        address: Address (optional)
+        city: City (optional)
+
+    Returns:
+        Success response with created client details, or error message
+    """
+    client = get_api_client()
+    try:
+        # Generate a temporary password
+        temp_password = generate_password()
+
+        # Prepare the data
+        data = {
+            "name": name,
+            "email": email,
+            "password": temp_password,
+            "role": "client",
+            "status": "active",
+        }
+
+        # Add optional fields if provided
+        if phone:
+            data["phone"] = phone
+        if gender and gender in ["male", "female", "other"]:
+            data["gender"] = gender
+        if address:
+            data["address"] = address
+        if city:
+            data["city"] = city
+
+        # Add branch ID if available from context
+        branch_id = get_current_branch_id()
+        if branch_id:
+            data["branchIds"] = [branch_id]
+
+        # Create the user via POST /users
+        response = await client.post("/users", data)
+
+        return {
+            "success": True,
+            "message": f"Client created successfully for {name}",
+            "client": {
+                "id": response.get("id"),
+                "name": response.get("name"),
+                "email": response.get("email"),
+                "phone": response.get("phone"),
+                "status": "active",
+            },
+            "temp_password": temp_password,
+        }
+    except Exception as e:
+        return {"error": str(e), "success": False}

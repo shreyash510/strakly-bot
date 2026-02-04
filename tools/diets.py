@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client
+from .base import get_api_client, get_current_branch_id
 
 
 @tool
@@ -59,3 +59,58 @@ async def get_client_diet(client_id: int) -> dict:
         return response
     except Exception as e:
         return {"error": str(e)}
+
+
+@tool
+async def create_diet(
+    title: str,
+    diet_type: str,
+    category: str,
+    content: str,
+    description: str = None,
+) -> dict:
+    """Create a new diet plan.
+
+    IMPORTANT: Only call this tool AFTER showing confirmation to the user and getting their approval.
+
+    Args:
+        title: Name/title of the diet plan (required)
+        diet_type: Type of diet - weight_loss, muscle_gain, maintenance, general (required)
+        category: Category - veg, non_veg, vegan, keto, etc. (required)
+        content: The diet plan content/meals (required)
+        description: Brief description of the diet (optional)
+
+    Returns:
+        Success response with created diet details, or error message
+    """
+    client = get_api_client()
+    try:
+        data = {
+            "title": title,
+            "type": diet_type,
+            "category": category,
+            "content": content,
+            "description": description or "",
+            "status": "active",
+        }
+
+        # Add branch ID if available
+        branch_id = get_current_branch_id()
+        if branch_id:
+            data["branchId"] = branch_id
+
+        response = await client.post("/diets", data)
+
+        return {
+            "success": True,
+            "message": f"Diet plan '{title}' created successfully",
+            "diet": {
+                "id": response.get("id"),
+                "title": response.get("title"),
+                "type": response.get("type"),
+                "category": response.get("category"),
+                "status": "active",
+            },
+        }
+    except Exception as e:
+        return {"error": str(e), "success": False}
