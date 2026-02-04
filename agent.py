@@ -1,4 +1,4 @@
-from langchain_groq import ChatGroq
+from langchain_openai import ChatOpenAI
 from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, ToolMessage
 from config import config
 from prompts import SYSTEM_PROMPT
@@ -47,10 +47,10 @@ conversations: dict[str, list] = {}
 
 def get_llm_with_tools():
     """Create LLM instance with tools bound"""
-    llm = ChatGroq(
-        model=config.GROQ_MODEL,
+    llm = ChatOpenAI(
+        model=config.OPENAI_MODEL,
         temperature=0,
-        api_key=config.GROQ_API_KEY,
+        api_key=config.OPENAI_API_KEY,
     )
     return llm.bind_tools(ALL_TOOLS)
 
