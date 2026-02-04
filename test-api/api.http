@@ -1,6 +1,6 @@
-# @baseUrl = http://localhost:8001
-@baseUrl = https://strakly-bot.onrender.com
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjIsImVtYWlsIjoic2hyZXllc2hrb2xoZTUxMEBnbWFpbC5jb20iLCJuYW1lIjoiU2hyZXlhc2gga29saGUiLCJyb2xlIjoiYWRtaW4iLCJneW1JZCI6MiwidGVuYW50U2NoZW1hTmFtZSI6InRlbmFudF8yIiwiYnJhbmNoSWQiOm51bGwsImlzQWRtaW4iOnRydWUsImlhdCI6MTc3MDE3MTI4OSwiZXhwIjoxNzcwNzc2MDg5fQ.esohAM5IGuZuRT9JnGlsOLXohS7djBltNl8H1QLz1o8
+@baseUrl = http://localhost:8001
+# @baseUrl = https://strakly-bot.onrender.com
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5Ac3RyYWtseS5jb20iLCJuYW1lIjoiYWRtaW4gYmhhaSIsInJvbGUiOiJhZG1pbiIsImd5bUlkIjoxLCJ0ZW5hbnRTY2hlbWFOYW1lIjoidGVuYW50XzEiLCJicmFuY2hJZCI6bnVsbCwiaXNBZG1pbiI6dHJ1ZSwiaWF0IjoxNzcwMDUyMzAxLCJleHAiOjE3NzA2NTcxMDF9.MMcLeuTLAA8VHKijt-gSy2tcBtKrgLPOo57pT14SiFI
 @groqKey = YOUR_GROQ_API_KEY_HERE
 
 ### Health Check - Root

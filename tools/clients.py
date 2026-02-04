@@ -14,7 +14,6 @@ async def get_clients_stats() -> dict:
     """
     client = get_api_client()
     try:
-        # Use dashboard endpoint which includes client stats
         response = await client.get("/dashboard/admin")
         return response
     except Exception as e:
@@ -33,6 +32,26 @@ async def get_clients_list() -> dict:
     client = get_api_client()
     try:
         response = await client.get("/users", {"role": "client", "limit": 20})
+        return response
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@tool
+async def get_client_details(search: str) -> dict:
+    """Get details of a specific client by name or ID.
+
+    Args:
+        search: Client name or ID to search for
+
+    Use this tool when user asks about:
+    - Details of a specific client
+    - Show me client X information
+    - Get info about member named Y
+    """
+    client = get_api_client()
+    try:
+        response = await client.get("/users", {"role": "client", "search": search, "limit": 5})
         return response
     except Exception as e:
         return {"error": str(e)}
