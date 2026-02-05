@@ -11,6 +11,11 @@ from tools import (
     get_client_by_id,
     get_expiring_memberships,
     create_client,
+    bulk_create_clients,
+    update_client,
+    bulk_update_clients,
+    delete_client,
+    bulk_delete_clients,
     # Memberships
     get_client_membership,
     get_membership_stats,
@@ -28,6 +33,7 @@ from tools import (
     get_enquiries_list,
     get_enquiries_stats,
     create_enquiry,
+    bulk_create_enquiries,
     # Gym & Branches
     get_gym_info,
     get_branches_info,
@@ -79,6 +85,11 @@ ALL_TOOLS = [
     get_client_by_id,
     get_expiring_memberships,
     create_client,
+    bulk_create_clients,
+    update_client,
+    bulk_update_clients,
+    delete_client,
+    bulk_delete_clients,
     # Memberships
     get_client_membership,
     get_membership_stats,
@@ -96,6 +107,7 @@ ALL_TOOLS = [
     get_enquiries_list,
     get_enquiries_stats,
     create_enquiry,
+    bulk_create_enquiries,
     # Gym & Branches
     get_gym_info,
     get_branches_info,
@@ -177,8 +189,8 @@ async def process_chat(
     # Build messages
     messages = [SystemMessage(content=SYSTEM_PROMPT)]
 
-    # Add conversation history (last 10 messages for context)
-    for msg in conversation[-10:]:
+    # Add conversation history (last 20 messages for context)
+    for msg in conversation[-20:]:
         messages.append(msg)
 
     # Add current user message
@@ -193,7 +205,7 @@ async def process_chat(
     tools_used = []
 
     # Agent loop - process until no more tool calls
-    max_iterations = 5
+    max_iterations = 10
     iteration = 0
 
     while iteration < max_iterations:
@@ -202,6 +214,9 @@ async def process_chat(
         # Get LLM response
         response = await llm.ainvoke(messages)
         messages.append(response)
+
+        # Store AI response in conversation history (preserves tool_calls context)
+        conversation.append(response)
 
         # If no tool calls, we're done
         if not response.tool_calls:
@@ -225,22 +240,20 @@ async def process_chat(
             else:
                 tool_result = f"Unknown tool: {tool_name}"
 
-            # Add tool result to messages
+            # Add tool result to messages and conversation history
             tool_message = ToolMessage(
                 content=tool_result,
                 tool_call_id=tool_call["id"],
             )
             messages.append(tool_message)
+            conversation.append(tool_message)
 
     # Get final response text
     final_response = response.content if response.content else "I couldn't process that request. Please try again."
 
-    # Save assistant response to conversation
-    conversation.append(AIMessage(content=final_response))
-
     # Limit conversation history size
-    if len(conversations[conversation_id]) > 20:
-        conversations[conversation_id] = conversations[conversation_id][-20:]
+    if len(conversations[conversation_id]) > 40:
+        conversations[conversation_id] = conversations[conversation_id][-40:]
 
     return {
         "success": True,
