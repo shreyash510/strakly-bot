@@ -29,7 +29,19 @@ class APIClient:
                 params=params,
                 timeout=30.0,
             )
-            response.raise_for_status()
+            if response.status_code >= 400:
+                try:
+                    error_body = response.json()
+                    error_msg = error_body.get("message", response.text)
+                    if isinstance(error_msg, list):
+                        error_msg = "; ".join(error_msg)
+                    raise httpx.HTTPStatusError(
+                        f"{response.status_code}: {error_msg}",
+                        request=response.request,
+                        response=response,
+                    )
+                except (ValueError, KeyError):
+                    response.raise_for_status()
             return response.json()
 
     async def post(self, endpoint: str, data: dict = None) -> dict:
@@ -47,7 +59,82 @@ class APIClient:
                 json=data,
                 timeout=30.0,
             )
-            response.raise_for_status()
+            if response.status_code >= 400:
+                # Include response body in error for better debugging
+                try:
+                    error_body = response.json()
+                    error_msg = error_body.get("message", response.text)
+                    if isinstance(error_msg, list):
+                        error_msg = "; ".join(error_msg)
+                    raise httpx.HTTPStatusError(
+                        f"{response.status_code}: {error_msg}",
+                        request=response.request,
+                        response=response,
+                    )
+                except (ValueError, KeyError):
+                    response.raise_for_status()
+            return response.json()
+
+    async def patch(self, endpoint: str, data: dict = None) -> dict:
+        """Make PATCH request to backend API"""
+        if data is None:
+            data = {}
+        if self.branch_id is not None:
+            data["branchId"] = self.branch_id
+
+        async with httpx.AsyncClient() as client:
+            response = await client.patch(
+                f"{self.base_url}{endpoint}",
+                headers=self.headers,
+                json=data,
+                timeout=30.0,
+            )
+            if response.status_code >= 400:
+                try:
+                    error_body = response.json()
+                    error_msg = error_body.get("message", response.text)
+                    if isinstance(error_msg, list):
+                        error_msg = "; ".join(error_msg)
+                    raise httpx.HTTPStatusError(
+                        f"{response.status_code}: {error_msg}",
+                        request=response.request,
+                        response=response,
+                    )
+                except (ValueError, KeyError):
+                    response.raise_for_status()
+            return response.json()
+
+    async def delete(self, endpoint: str, data: dict = None) -> dict:
+        """Make DELETE request to backend API"""
+        if data is None:
+            data = {}
+        if self.branch_id is not None:
+            data["branchId"] = self.branch_id
+
+        async with httpx.AsyncClient() as client:
+            response = await client.request(
+                "DELETE",
+                f"{self.base_url}{endpoint}",
+                headers=self.headers,
+                json=data,
+                timeout=30.0,
+            )
+            if response.status_code >= 400:
+                try:
+                    error_body = response.json()
+                    error_msg = error_body.get("message", response.text)
+                    if isinstance(error_msg, list):
+                        error_msg = "; ".join(error_msg)
+                    raise httpx.HTTPStatusError(
+                        f"{response.status_code}: {error_msg}",
+                        request=response.request,
+                        response=response,
+                    )
+                except (ValueError, KeyError):
+                    response.raise_for_status()
+            # Some DELETE endpoints return empty body
+            if response.status_code == 204 or not response.text:
+                return {"success": True}
             return response.json()
 
 

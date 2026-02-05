@@ -117,3 +117,85 @@ async def create_enquiry(
         }
     except Exception as e:
         return {"error": str(e), "success": False}
+
+
+@tool
+async def bulk_create_enquiries(
+    enquiries_json: str,
+) -> dict:
+    """Bulk create multiple enquiries/leads at once.
+
+    IMPORTANT: Only call this tool AFTER showing confirmation to the user and getting their approval.
+
+    Args:
+        enquiries_json: JSON string containing array of enquiry objects.
+            Each object should have: name (required), email (required),
+            and optionally: phone, gender, address, city.
+            Example: '[{"name": "John", "email": "john@example.com", "phone": "1234567890"}, {"name": "Jane", "email": "jane@example.com"}]'
+
+    Returns:
+        Summary with success count, failed count, errors, and created enquiries list.
+    """
+    import json as json_module
+
+    client = get_api_client()
+    try:
+        enquiries = json_module.loads(enquiries_json)
+
+        if not isinstance(enquiries, list):
+            return {"error": "Expected a JSON array of enquiry objects", "success": False}
+
+        if len(enquiries) == 0:
+            return {"error": "No enquiries provided", "success": False}
+
+        if len(enquiries) > 50:
+            return {"error": "Maximum 50 enquiries allowed per batch", "success": False}
+
+        # Prepare each enquiry with required fields
+        users = []
+        for i, enq in enumerate(enquiries):
+            if not enq.get("name") or not enq.get("email"):
+                return {
+                    "error": f"Enquiry {i + 1}: name and email are required",
+                    "success": False,
+                }
+
+            user_data = {
+                "name": enq["name"],
+                "email": enq["email"],
+                "password": generate_password(),
+                "status": "onboarding",
+                "role": "client",
+            }
+
+            if enq.get("phone"):
+                user_data["phone"] = enq["phone"]
+            if enq.get("gender") and enq["gender"] in ["male", "female", "other"]:
+                user_data["gender"] = enq["gender"]
+            if enq.get("address"):
+                user_data["address"] = enq["address"]
+            if enq.get("city"):
+                user_data["city"] = enq["city"]
+
+            branch_id = get_current_branch_id()
+            if branch_id:
+                user_data["branchIds"] = [branch_id]
+
+            users.append(user_data)
+
+        # Call bulk create endpoint
+        response = await client.post("/users/bulk/create", {"users": users})
+
+        return {
+            "success": True,
+            "message": f"Bulk enquiry creation completed: {response.get('success', 0)} created, {response.get('failed', 0)} failed",
+            "total_submitted": len(enquiries),
+            "total_created": response.get("success", 0),
+            "total_failed": response.get("failed", 0),
+            "created": response.get("created", []),
+            "errors": response.get("errors", []),
+        }
+    except json_module.JSONDecodeError:
+        return {"error": "Invalid JSON format. Please provide a valid JSON array.", "success": False}
+    except Exception as e:
+        return {"error": str(e), "success": False}
