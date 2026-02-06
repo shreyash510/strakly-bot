@@ -284,22 +284,29 @@ The trainer will receive login credentials via email.
 
 ### How to Handle Enquiries
 
-1. Go to **Enquiry** page from the sidebar
-2. Click **"Add Enquiry"** to add a new prospect
-3. Fill in:
-   - **Name**
-   - **Phone**
-   - **Email**
-   - **Interest** (Membership type)
-   - **Source** (Walk-in, Social Media, Referral, etc.)
-   - **Notes**
-4. Click **"Save"**
+The Clients page has status-based tabs: **Enquiry**, **Confirmed**, **Active**, **Expired**, and **Suspended**. Each tab filters clients by their current status.
 
-**Follow up on enquiry:**
-1. View enquiry details
-2. Add follow-up notes
-3. Update status (Contacted, Interested, Not Interested)
-4. Convert to client when ready
+**Add a new enquiry:**
+1. Go to **Clients** page from the sidebar
+2. Switch to the **Enquiry** tab
+3. Click the **"Add Enquiry"** button (only visible on the Enquiry tab)
+4. Fill in the prospect details and click **"Save"**
+
+**Move enquiry to confirmed (single):**
+1. Open the enquiry client's profile
+2. Change their status to **"Confirmed"**
+
+**Move enquiries to confirmed (bulk):**
+1. Go to **Clients** page > **Enquiry** tab
+2. Select multiple enquiry clients using the checkboxes
+3. Click the **"Change Status"** icon button in the bulk action bar
+4. Select **"confirm"** from the status dropdown
+5. Click **"Confirm"** to move all selected clients to the Confirmed tab
+
+**Add a client directly:**
+1. Go to **Clients** page > **Active** tab
+2. Click the **"Add Client"** button (only visible on the Active tab)
+3. Fill in client details and save
 
 ---
 
@@ -350,11 +357,42 @@ The trainer will receive login credentials via email.
 
 ### How to Transfer a Client to Another Branch
 
+**Single transfer:**
 1. Go to client's profile page
 2. Find the **"Transfer Branch"** section
 3. Select the destination branch
 4. Click **"Transfer"**
 5. The client will be moved to the new branch
+
+**Bulk transfer (move multiple clients at once):**
+1. Go to **Clients** page
+2. Select multiple clients using the checkboxes
+3. Click the **"Move to Branch"** icon button in the bulk action bar
+4. Select the destination branch from the dropdown
+5. Click **"Move"** to transfer all selected clients
+
+---
+
+### How to Bulk Change Client Status
+
+1. Go to **Clients** page
+2. Select multiple clients using the checkboxes in any tab
+3. Click the **"Change Status"** icon button in the bulk action bar
+4. Select the new status from the dropdown (options exclude the current tab's status)
+5. Click **"Confirm"** to update all selected clients
+6. The tab counts will update automatically after the operation
+
+**Available statuses:** Onboarding (Enquiry), Confirm, Active, Expired, Suspended
+
+---
+
+### How to Bulk Delete Clients
+
+1. Go to **Clients** page
+2. Select multiple clients using the checkboxes
+3. Click the **"Delete"** icon button in the bulk action bar
+4. Confirm the deletion in the dialog
+5. Selected clients will be permanently removed
 
 ---
 
@@ -383,6 +421,18 @@ The trainer will receive login credentials via email.
 2. View salary history by month
 3. See base salary, bonus, deductions, and net amount
 4. Check payment status (Paid/Pending)
+
+---
+
+### How to View What's New
+
+1. Go to **What's New** page from the sidebar (under Account section)
+2. View the latest features, improvements, and bug fixes
+3. Each release is grouped by version with color-coded tags:
+   - **Feature** - New functionality added
+   - **Improvement** - Enhancements to existing features
+   - **Fix** - Bug fixes
+4. All user roles can access this page
 
 ---
 
