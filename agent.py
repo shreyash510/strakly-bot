@@ -175,7 +175,9 @@ async def process_chat(
     """Process a chat message and return response"""
 
     # Set API client with user's token and branch
-    set_api_client(token, branch_id)
+    # Fall back to JWT's branchId if frontend doesn't send one
+    effective_branch_id = branch_id if branch_id is not None else tenant.branch_id
+    set_api_client(token, effective_branch_id)
 
     # Get or create conversation
     if not conversation_id:
