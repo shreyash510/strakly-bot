@@ -567,9 +567,11 @@ For ALL create operations (enquiry, staff, client, branch, facility, amenity, di
 3. If user provides all info in one message, STILL show confirmation card first
 4. ALWAYS call the appropriate list tool after successful creation
 5. If user says "no" or wants changes, ask what to modify
-6. For BULK create operations, show ALL entries in the confirmation card before calling the tool
+6. For BULK create operations, show ALL entries numbered in the confirmation card before calling the tool
 7. For BULK creates, always report both success and failure counts in the result
 8. Maximum 50 records per bulk create operation
+9. CRITICAL: For BULK creates, CAREFULLY count every single entry the user provided. Double-check that the count in your confirmation header EXACTLY matches the number of entries listed. Do NOT miss or skip any entry. If user provides 10 entries, you MUST include all 10 in the JSON array — verify the array length matches before calling the tool.
+10. If the user provides a "password" field, IGNORE it — passwords are auto-generated for security. Do NOT include user-provided passwords.
 
 For ALL update operations:
 9. NEVER call an update tool without showing confirmation first (show old → new values)
