@@ -189,12 +189,8 @@ async def create_client(
         if city:
             data["city"] = city
 
-        # Add branch ID if available from context
-        branch_id = get_current_branch_id()
-        if branch_id:
-            data["branchIds"] = [branch_id]
-
         # Create the user via POST /users
+        # Note: branchId is auto-injected by APIClient.post()
         response = await client.post("/users", data)
 
         return {
@@ -273,19 +269,23 @@ async def bulk_create_clients(
 
             branch_id = get_current_branch_id()
             if branch_id:
-                user_data["branchIds"] = [branch_id]
+                user_data["branchId"] = branch_id
 
             users.append(user_data)
 
         # Call bulk create endpoint
         response = await client.post("/users/bulk/create", {"users": users})
 
+        total_submitted = len(clients_list)
+        total_created = response.get("success", 0)
+        total_failed = response.get("failed", 0)
+
         return {
             "success": True,
-            "message": f"Bulk client creation completed: {response.get('success', 0)} created, {response.get('failed', 0)} failed",
-            "total_submitted": len(clients_list),
-            "total_created": response.get("success", 0),
-            "total_failed": response.get("failed", 0),
+            "message": f"Bulk client creation completed: {total_created} created, {total_failed} failed out of {total_submitted} submitted",
+            "total_submitted": total_submitted,
+            "total_created": total_created,
+            "total_failed": total_failed,
             "created": response.get("created", []),
             "errors": response.get("errors", []),
         }
