@@ -72,7 +72,7 @@ async def get_clients_list() -> dict:
         # Return structured response with actual client names
         return {
             "count": len(clients_list),
-            "clients": [{"id": c.get("id"), "name": c.get("name"), "email": c.get("email"), "status": c.get("status")} for c in clients_list]
+            "clients": [{"id": c.get("id"), "name": c.get("name"), "email": c.get("email"), "status": c.get("status"), "avatar": c.get("avatar")} for c in clients_list]
         }
     except Exception as e:
         return {"error": str(e)}
@@ -318,7 +318,7 @@ async def update_client(
         name: New name (optional)
         email: New email (optional)
         phone: New phone number (optional)
-        status: New status - active, inactive, suspended (optional)
+        status: New status - must be one of: onboarding, confirm, active, expired, inactive, rejected, archive (optional)
         gender: New gender - male, female, other (optional)
         address: New address (optional)
         city: New city (optional)
@@ -380,7 +380,7 @@ async def bulk_update_clients(
     Args:
         client_ids_json: JSON string containing array of client IDs to update.
             Example: '[1, 2, 3, 4, 5]'
-        status: New status to set for all clients - active, inactive, suspended (optional)
+        status: New status to set for all clients - must be one of: onboarding, confirm, active, expired, inactive, rejected, archive (optional)
         branch_ids_json: JSON string containing array of branch IDs to assign.
             Example: '[1, 2]' (optional)
 
