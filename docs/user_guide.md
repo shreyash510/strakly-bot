@@ -424,6 +424,47 @@ The Clients page has status-based tabs: **Enquiry**, **Confirmed**, **Active**, 
 
 ---
 
+### How to Migrate Data from Another Software
+
+If you're switching from another gym software, you can import your existing data using the Data Migration feature.
+
+**Supported data types:** Members, Staff (Trainers/Managers), Memberships, Payments
+
+**Step-by-step:**
+
+1. Go to **Data Migration** page from the sidebar (Admin and Branch Admin only)
+2. Read the migration guide shown on the page
+3. **Select data type** — choose what you want to import (Members, Staff, Memberships, or Payments)
+4. **Download template** (optional) — click "Template" to get an Excel file with the correct format
+5. **Upload your file** — drag & drop or browse for your CSV/Excel file (max 10MB)
+6. Click **"Parse & Continue"** to proceed
+
+**Column Mapping:**
+7. Review the auto-detected column mappings
+8. For each Strakly field, select the matching column from your file using the dropdown
+9. Required fields are marked with an asterisk (*)
+10. Check the preview table to verify mappings look correct
+11. Click **"Continue"**
+
+**Value Mapping:**
+12. Review auto-mapped values (e.g., "Active" → "active", "M" → "male")
+13. Map any unrecognized values to Strakly equivalents using the dropdowns
+14. Click **"Continue"**
+
+**Preview & Import:**
+15. Review the validation summary (Total Rows, Valid Rows, Errors)
+16. Check the error list — rows with errors will be skipped during import
+17. Click **"Import X Rows"** to start the import
+18. View the import results (imported, skipped, errors)
+
+**Important notes:**
+- **Import order**: Import Members and Staff first, then Memberships and Payments (memberships need existing members, payments need existing members)
+- **Duplicate emails are skipped** — existing data won't be overwritten
+- **Default password**: Imported members get password "Strakly@123" — they should change it on first login
+- **Supported formats**: CSV, Excel (.xlsx, .xls), max 10MB per file
+
+---
+
 ### How to View What's New
 
 1. Go to **What's New** page from the sidebar (under Account section)
