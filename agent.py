@@ -6,6 +6,7 @@ from tools import (
     set_api_client,
     # Clients
     get_clients_stats,
+    get_dashboard_overview,
     get_clients_list,
     get_client_details,
     get_client_by_id,
@@ -80,6 +81,7 @@ import uuid
 ALL_TOOLS = [
     # Clients
     get_clients_stats,
+    get_dashboard_overview,
     get_clients_list,
     get_client_details,
     get_client_by_id,

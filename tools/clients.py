@@ -24,21 +24,67 @@ async def get_clients_stats() -> dict:
     try:
         response = await client.get("/dashboard/admin")
 
-        # Extract client stats if available
         if isinstance(response, dict):
-            total = response.get("totalClients", 0)
-            active = response.get("activeClients", 0)
-            inactive = response.get("inactiveClients", 0)
+            stats = response.get("stats", response)
+            total = stats.get("totalMembers", 0)
 
             if total == 0:
                 return {
-                    "totalClients": 0,
-                    "activeClients": 0,
-                    "inactiveClients": 0,
+                    "totalMembers": 0,
+                    "activeMembers": 0,
                     "message": "No clients found. The gym has no registered clients yet."
                 }
 
-            return response
+            return {
+                "totalMembers": stats.get("totalMembers", 0),
+                "activeMembers": stats.get("activeMembers", 0),
+                "totalTrainers": stats.get("totalTrainers", 0),
+                "expiredMemberships": stats.get("expiredMemberships", 0),
+                "pendingOnboardingCount": stats.get("pendingOnboardingCount", 0),
+            }
+
+        return response
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@tool
+async def get_dashboard_overview() -> dict:
+    """Get full dashboard overview including client gender distribution, new clients/enquiries this month, and last 5 months revenue history.
+
+    Use this tool when user asks about:
+    - Dashboard overview or summary
+    - Male and female client count or gender distribution
+    - How many new clients or enquiries this month
+    - Revenue trend or revenue over the last few months
+    - Monthly revenue history or revenue graph data
+    - Overall gym performance summary
+    """
+    client = get_api_client()
+    try:
+        response = await client.get("/dashboard/admin")
+
+        if isinstance(response, dict):
+            stats = response.get("stats", response)
+            total_members = stats.get("totalMembers", 0)
+
+            return {
+                "totalMembers": total_members,
+                "activeMembers": stats.get("activeMembers", 0),
+                "totalTrainers": stats.get("totalTrainers", 0),
+                "activeMemberships": stats.get("activeMemberships", 0),
+                "maleClients": stats.get("maleClients", 0),
+                "femaleClients": stats.get("femaleClients", 0),
+                "newClientsThisMonth": stats.get("newClientsThisMonth", 0),
+                "newEnquiriesThisMonth": stats.get("newEnquiriesThisMonth", 0),
+                "monthlyRevenue": stats.get("monthlyRevenue", 0),
+                "totalRevenue": stats.get("totalRevenue", 0),
+                "monthlyGrowth": stats.get("monthlyGrowth", 0),
+                "expiredMemberships": stats.get("expiredMemberships", 0),
+                "pendingOnboardingCount": stats.get("pendingOnboardingCount", 0),
+                "presentToday": stats.get("presentToday", 0),
+                "monthlyRevenueHistory": stats.get("monthlyRevenueHistory", []),
+            }
 
         return response
     except Exception as e:
