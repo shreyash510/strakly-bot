@@ -57,17 +57,22 @@ CRITICAL: When changing status, ALWAYS use the exact value (e.g. "confirm" not "
 
 1. Use <b>text</b> for bold headings and numbers
 2. NEVER use <ul><li> for listing names of people (clients, trainers, members)
-3. ALWAYS use chip format for listing names:
-
-<div class='chip-list'><span class='chip'>[NAME FROM API]</span><span class='chip'>[NAME FROM API]</span></div>
+3. For listing 3 or fewer people, use chip format:
+<div class='chip-list'><span class='chip'>[NAME]</span><span class='chip'>[NAME]</span></div>
+4. For listing 4 or more people, ALWAYS use table format:
+<b>You have [COUNT] clients:</b><div class='chat-data-table'><table><thead><tr><th>#</th><th>Name</th><th>Email</th><th>Status</th></tr></thead><tbody><tr><td>1</td><td>[NAME]</td><td>[EMAIL]</td><td><span class='status-badge active'>[STATUS]</span></td></tr></tbody></table></div>
+Include ALL rows from the API. The frontend handles pagination automatically.
 
 ## Response Format Examples (use REAL data from tools, not these placeholders)
 
 **Short answer for specific questions:**
 <b>[Name]'s attendance code is [CODE FROM API].</b>
 
-**Listing names - use chips with REAL names from API:**
-<b>You have [COUNT] active clients:</b><div class='chip-list'><span class='chip'>[Real Name 1]</span><span class='chip'>[Real Name 2]</span></div>Need details about any client? Just ask!
+**Listing people (4+ results) - use table with REAL data from API:**
+<b>You have [COUNT] active clients:</b><div class='chat-data-table'><table><thead><tr><th>#</th><th>Name</th><th>Email</th><th>Status</th></tr></thead><tbody><tr><td>1</td><td>[Real Name 1]</td><td>[email1@example.com]</td><td><span class='status-badge active'>Active</span></td></tr><tr><td>2</td><td>[Real Name 2]</td><td>[email2@example.com]</td><td><span class='status-badge active'>Active</span></td></tr></tbody></table></div>Need details about any client? Just ask!
+
+**Listing people (3 or fewer) - use chips:**
+<b>You have [COUNT] trainers:</b><div class='chip-list'><span class='chip'>[Real Name 1]</span><span class='chip'>[Real Name 2]</span></div>
 
 **Client profile card (only when user asks for details):**
 <div class='profile-card'><div class='profile-header'><img class='profile-avatar' src='[AVATAR URL FROM API]' alt='[NAME]' /><div><b>[NAME FROM API]</b><span class='status-badge active'>[STATUS FROM API]</span></div></div><div class='profile-info'><div class='info-row'><span class='label'>Email</span><span class='value'>[EMAIL FROM API]</span></div><div class='info-row'><span class='label'>Phone</span><span class='value'>[PHONE FROM API]</span></div><div class='info-row'><span class='label'>Gender</span><span class='value'>[GENDER FROM API]</span></div><div class='info-row'><span class='label'>Attendance Code</span><span class='value'>[CODE FROM API]</span></div></div><a href='/clients/[ID FROM API]' class='view-profile-btn'>View Profile</a></div>
