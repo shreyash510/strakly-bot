@@ -1,157 +1,15 @@
-from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage, SystemMessage, AIMessage, ToolMessage
-from config import config
-from prompts import SYSTEM_PROMPT
-from tools import (
-    set_api_client,
-    # Clients
-    get_clients_stats,
-    get_dashboard_overview,
-    get_clients_list,
-    get_client_details,
-    get_client_by_id,
-    get_expiring_memberships,
-    create_client,
-    bulk_create_clients,
-    update_client,
-    bulk_update_clients,
-    delete_client,
-    bulk_delete_clients,
-    # Memberships
-    get_client_membership,
-    get_membership_stats,
-    get_active_membership_clients,
-    # Attendance
-    get_attendance_today,
-    get_attendance_stats,
-    # Revenue
-    get_revenue_stats,
-    get_membership_sales,
-    # Trainers
-    get_trainers_list,
-    get_trainers_stats,
-    # Enquiries
-    get_enquiries_list,
-    get_enquiries_stats,
-    create_enquiry,
-    bulk_create_enquiries,
-    # Gym & Branches
-    get_gym_info,
-    get_branches_info,
-    get_current_branch,
-    create_branch,
-    # Staff
-    get_managers_list,
-    get_staff_list,
-    get_staff_details,
-    get_branch_admins_list,
-    create_staff,
-    # Salary
-    get_salary_by_name,
-    get_staff_salary,
-    get_salary_stats,
-    get_pending_salaries,
-    get_all_salaries,
-    # Facilities & Amenities
-    get_amenities_list,
-    get_facilities_list,
-    create_amenity,
-    create_facility,
-    # Diets
-    get_diet_plans,
-    get_diet_by_id,
-    get_client_diet,
-    create_diet,
-    # Plans
-    get_membership_plans,
-    get_featured_plans,
-    get_plan_details,
-    create_plan,
-    # Offers
-    get_offers_list,
-    get_active_offers,
-    get_offer_details,
-    validate_offer_code,
-    create_offer,
-)
-from auth import TenantContext
+import logging
 import uuid
 
-# All available tools
-ALL_TOOLS = [
-    # Clients
-    get_clients_stats,
-    get_dashboard_overview,
-    get_clients_list,
-    get_client_details,
-    get_client_by_id,
-    get_expiring_memberships,
-    create_client,
-    bulk_create_clients,
-    update_client,
-    bulk_update_clients,
-    delete_client,
-    bulk_delete_clients,
-    # Memberships
-    get_client_membership,
-    get_membership_stats,
-    get_active_membership_clients,
-    # Attendance
-    get_attendance_today,
-    get_attendance_stats,
-    # Revenue
-    get_revenue_stats,
-    get_membership_sales,
-    # Trainers
-    get_trainers_list,
-    get_trainers_stats,
-    # Enquiries
-    get_enquiries_list,
-    get_enquiries_stats,
-    create_enquiry,
-    bulk_create_enquiries,
-    # Gym & Branches
-    get_gym_info,
-    get_branches_info,
-    get_current_branch,
-    create_branch,
-    # Staff
-    get_managers_list,
-    get_staff_list,
-    get_staff_details,
-    get_branch_admins_list,
-    create_staff,
-    # Salary
-    get_salary_by_name,
-    get_staff_salary,
-    get_salary_stats,
-    get_pending_salaries,
-    get_all_salaries,
-    # Facilities & Amenities
-    get_amenities_list,
-    get_facilities_list,
-    create_amenity,
-    create_facility,
-    # Diets
-    get_diet_plans,
-    get_diet_by_id,
-    get_client_diet,
-    create_diet,
-    # Plans
-    get_membership_plans,
-    get_featured_plans,
-    get_plan_details,
-    create_plan,
-    # Offers
-    get_offers_list,
-    get_active_offers,
-    get_offer_details,
-    validate_offer_code,
-    create_offer,
-]
+from langchain_openai import ChatOpenAI
+from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 
-# Tool name to function mapping
-TOOL_MAP = {tool.name: tool for tool in ALL_TOOLS}
+from config import config
+from prompts import SYSTEM_PROMPT
+from tools import ALL_TOOLS, TOOL_MAP, set_api_client
+from auth import TenantContext
+
+logger = logging.getLogger(__name__)
 
 # In-memory conversation store (temporary per session)
 conversations: dict[str, list] = {}
@@ -218,8 +76,6 @@ async def process_chat(
         # Get LLM response
         response = await llm.ainvoke(messages)
         messages.append(response)
-
-        # Store AI response in conversation history (preserves tool_calls context)
         conversation.append(response)
 
         # If no tool calls, we're done
@@ -230,21 +86,18 @@ async def process_chat(
         for tool_call in response.tool_calls:
             tool_name = tool_call["name"]
             tool_args = tool_call["args"]
-
             tools_used.append(tool_name)
 
-            # Get and execute tool
             if tool_name in TOOL_MAP:
                 try:
-                    tool_fn = TOOL_MAP[tool_name]
-                    result = await tool_fn.ainvoke(tool_args)
+                    result = await TOOL_MAP[tool_name].ainvoke(tool_args)
                     tool_result = str(result)
                 except Exception as e:
+                    logger.error("Tool %s failed: %s", tool_name, e)
                     tool_result = f"Error executing tool: {str(e)}"
             else:
                 tool_result = f"Unknown tool: {tool_name}"
 
-            # Add tool result to messages and conversation history
             tool_message = ToolMessage(
                 content=tool_result,
                 tool_call_id=tool_call["id"],
@@ -258,6 +111,12 @@ async def process_chat(
     # Limit conversation history size
     if len(conversations[conversation_id]) > 40:
         conversations[conversation_id] = conversations[conversation_id][-40:]
+
+    logger.info(
+        "Chat processed: conversation=%s, tools=%s",
+        conversation_id,
+        tools_used,
+    )
 
     return {
         "success": True,

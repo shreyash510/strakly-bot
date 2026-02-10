@@ -1,13 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client, get_current_branch_id
-import secrets
-import string
-
-
-def generate_password(length: int = 12) -> str:
-    """Generate a secure random password"""
-    alphabet = string.ascii_letters + string.digits
-    return ''.join(secrets.choice(alphabet) for _ in range(length))
+from .base import get_api_client, get_current_branch_id, generate_password, extract_list
 
 
 @tool
@@ -49,13 +41,9 @@ async def get_staff_list() -> dict:
         # Get branch admins
         branch_admins = await client.get("/users", {"role": "branch_admin", "limit": 20})
 
-        managers_data = managers.get("data", managers) if isinstance(managers, dict) else managers
-        trainers_data = trainers.get("data", trainers) if isinstance(trainers, dict) else trainers
-        branch_admins_data = branch_admins.get("data", branch_admins) if isinstance(branch_admins, dict) else branch_admins
-
-        managers_list = managers_data if isinstance(managers_data, list) else []
-        trainers_list = trainers_data if isinstance(trainers_data, list) else []
-        branch_admins_list = branch_admins_data if isinstance(branch_admins_data, list) else []
+        managers_list = extract_list(managers)
+        trainers_list = extract_list(trainers)
+        branch_admins_list = extract_list(branch_admins)
 
         return {
             "managers": {
@@ -97,23 +85,11 @@ async def get_staff_details(search: str) -> dict:
         # Search in branch admins
         branch_admins = await client.get("/users", {"role": "branch_admin", "search": search, "limit": 5})
 
-        managers_data = managers.get("data", managers) if isinstance(managers, dict) else managers
-        trainers_data = trainers.get("data", trainers) if isinstance(trainers, dict) else trainers
-        branch_admins_data = branch_admins.get("data", branch_admins) if isinstance(branch_admins, dict) else branch_admins
-
         results = []
-        if isinstance(managers_data, list):
-            for m in managers_data:
-                m["staffRole"] = "manager"
-                results.append(m)
-        if isinstance(trainers_data, list):
-            for t in trainers_data:
-                t["staffRole"] = "trainer"
-                results.append(t)
-        if isinstance(branch_admins_data, list):
-            for b in branch_admins_data:
-                b["staffRole"] = "branch_admin"
-                results.append(b)
+        for role, data in [("manager", managers), ("trainer", trainers), ("branch_admin", branch_admins)]:
+            for item in extract_list(data):
+                item["staffRole"] = role
+                results.append(item)
 
         return {
             "count": len(results),

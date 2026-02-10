@@ -1,8 +1,17 @@
+import logging
+
 from fastapi import FastAPI, Header, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from models import ChatRequest, ChatResponse, HealthResponse
 from auth import decode_token
 from agent import process_chat, clear_conversation
+from config import config
+
+logging.basicConfig(
+    level=getattr(logging, config.LOG_LEVEL, logging.INFO),
+    format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Strakly Bot",
@@ -56,6 +65,7 @@ async def chat(
 
     # Decode and validate token
     tenant = decode_token(token)
+    logger.info("Chat request from user=%s gym=%s", tenant.user_id, tenant.gym_id)
 
     # Process chat message
     result = await process_chat(

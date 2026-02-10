@@ -1,7 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client, get_current_branch_id
-import secrets
-import string
+from .base import get_api_client, get_current_branch_id, generate_password, extract_list
 
 
 @tool
@@ -39,12 +37,6 @@ async def get_enquiries_stats() -> dict:
         return response
     except Exception as e:
         return {"error": str(e)}
-
-
-def generate_password(length: int = 12) -> str:
-    """Generate a secure random password"""
-    alphabet = string.ascii_letters + string.digits
-    return ''.join(secrets.choice(alphabet) for _ in range(length))
 
 
 @tool

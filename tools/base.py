@@ -1,3 +1,6 @@
+import contextvars
+import secrets
+import string
 import httpx
 from config import config
 
@@ -13,150 +16,96 @@ class APIClient:
             "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
         }
+        self._http = httpx.AsyncClient(
+            base_url=self.base_url,
+            headers=self.headers,
+            timeout=30.0,
+        )
+
+    def _handle_response(self, response: httpx.Response) -> dict:
+        """Handle API response — raise on error, parse JSON on success."""
+        if response.status_code >= 400:
+            try:
+                error_body = response.json()
+                error_msg = error_body.get("message", response.text)
+                if isinstance(error_msg, list):
+                    error_msg = "; ".join(error_msg)
+                raise httpx.HTTPStatusError(
+                    f"{response.status_code}: {error_msg}",
+                    request=response.request,
+                    response=response,
+                )
+            except (ValueError, KeyError):
+                response.raise_for_status()
+        if response.status_code == 204 or not response.text:
+            return {"success": True}
+        return response.json()
+
+    def _inject_branch(self, params: dict) -> dict:
+        """Inject branch_id into params/data if set."""
+        if self.branch_id is not None:
+            params["branchId"] = self.branch_id
+        return params
 
     async def get(self, endpoint: str, params: dict = None) -> dict:
         """Make GET request to backend API"""
-        # Include branch_id in params if set
-        if params is None:
-            params = {}
-        if self.branch_id is not None:
-            params["branchId"] = self.branch_id
-
-        async with httpx.AsyncClient() as client:
-            response = await client.get(
-                f"{self.base_url}{endpoint}",
-                headers=self.headers,
-                params=params,
-                timeout=30.0,
-            )
-            if response.status_code >= 400:
-                try:
-                    error_body = response.json()
-                    error_msg = error_body.get("message", response.text)
-                    if isinstance(error_msg, list):
-                        error_msg = "; ".join(error_msg)
-                    raise httpx.HTTPStatusError(
-                        f"{response.status_code}: {error_msg}",
-                        request=response.request,
-                        response=response,
-                    )
-                except (ValueError, KeyError):
-                    response.raise_for_status()
-            return response.json()
+        params = self._inject_branch(params or {})
+        response = await self._http.get(endpoint, params=params)
+        return self._handle_response(response)
 
     async def post(self, endpoint: str, data: dict = None) -> dict:
         """Make POST request to backend API"""
-        # Include branch_id in data if set
-        if data is None:
-            data = {}
-        if self.branch_id is not None:
-            data["branchId"] = self.branch_id
-
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                f"{self.base_url}{endpoint}",
-                headers=self.headers,
-                json=data,
-                timeout=30.0,
-            )
-            if response.status_code >= 400:
-                # Include response body in error for better debugging
-                try:
-                    error_body = response.json()
-                    error_msg = error_body.get("message", response.text)
-                    if isinstance(error_msg, list):
-                        error_msg = "; ".join(error_msg)
-                    raise httpx.HTTPStatusError(
-                        f"{response.status_code}: {error_msg}",
-                        request=response.request,
-                        response=response,
-                    )
-                except (ValueError, KeyError):
-                    response.raise_for_status()
-            return response.json()
+        data = self._inject_branch(data or {})
+        response = await self._http.post(endpoint, json=data)
+        return self._handle_response(response)
 
     async def patch(self, endpoint: str, data: dict = None) -> dict:
         """Make PATCH request to backend API"""
-        if data is None:
-            data = {}
-        if self.branch_id is not None:
-            data["branchId"] = self.branch_id
-
-        async with httpx.AsyncClient() as client:
-            response = await client.patch(
-                f"{self.base_url}{endpoint}",
-                headers=self.headers,
-                json=data,
-                timeout=30.0,
-            )
-            if response.status_code >= 400:
-                try:
-                    error_body = response.json()
-                    error_msg = error_body.get("message", response.text)
-                    if isinstance(error_msg, list):
-                        error_msg = "; ".join(error_msg)
-                    raise httpx.HTTPStatusError(
-                        f"{response.status_code}: {error_msg}",
-                        request=response.request,
-                        response=response,
-                    )
-                except (ValueError, KeyError):
-                    response.raise_for_status()
-            return response.json()
+        data = self._inject_branch(data or {})
+        response = await self._http.patch(endpoint, json=data)
+        return self._handle_response(response)
 
     async def delete(self, endpoint: str, data: dict = None) -> dict:
         """Make DELETE request to backend API"""
-        if data is None:
-            data = {}
-        if self.branch_id is not None:
-            data["branchId"] = self.branch_id
-
-        async with httpx.AsyncClient() as client:
-            response = await client.request(
-                "DELETE",
-                f"{self.base_url}{endpoint}",
-                headers=self.headers,
-                json=data,
-                timeout=30.0,
-            )
-            if response.status_code >= 400:
-                try:
-                    error_body = response.json()
-                    error_msg = error_body.get("message", response.text)
-                    if isinstance(error_msg, list):
-                        error_msg = "; ".join(error_msg)
-                    raise httpx.HTTPStatusError(
-                        f"{response.status_code}: {error_msg}",
-                        request=response.request,
-                        response=response,
-                    )
-                except (ValueError, KeyError):
-                    response.raise_for_status()
-            # Some DELETE endpoints return empty body
-            if response.status_code == 204 or not response.text:
-                return {"success": True}
-            return response.json()
+        data = self._inject_branch(data or {})
+        response = await self._http.request("DELETE", endpoint, json=data)
+        return self._handle_response(response)
 
 
-# Global client instance (set per request)
-_current_client: APIClient | None = None
+# Request-scoped API client using contextvars (safe for concurrent async requests)
+_current_client: contextvars.ContextVar[APIClient | None] = contextvars.ContextVar(
+    "_current_client", default=None
+)
 
 
 def set_api_client(token: str, branch_id: int = None):
     """Set the API client for current request context"""
-    global _current_client
-    _current_client = APIClient(token, branch_id)
+    _current_client.set(APIClient(token, branch_id))
 
 
 def get_api_client() -> APIClient:
     """Get the current API client"""
-    if _current_client is None:
+    client = _current_client.get()
+    if client is None:
         raise RuntimeError("API client not initialized. Call set_api_client first.")
-    return _current_client
+    return client
 
 
 def get_current_branch_id() -> int | None:
     """Get the current branch ID from the API client"""
-    if _current_client is None:
+    client = _current_client.get()
+    if client is None:
         return None
-    return _current_client.branch_id
+    return client.branch_id
+
+
+def generate_password(length: int = 12) -> str:
+    """Generate a secure random password"""
+    alphabet = string.ascii_letters + string.digits
+    return "".join(secrets.choice(alphabet) for _ in range(length))
+
+
+def extract_list(response: dict | list, key: str = "data") -> list:
+    """Extract list from API response, handling both {data: [...]} and [...] formats."""
+    data = response.get(key, response) if isinstance(response, dict) else response
+    return data if isinstance(data, list) else []
