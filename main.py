@@ -23,7 +23,7 @@ app = FastAPI(
 # CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Update with your frontend URLs in production
+    allow_origins=config.CORS_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -58,10 +58,7 @@ async def chat(
             detail="Authorization header required",
         )
 
-    token = authorization
-    if token.startswith("Bearer "):
-        token = token[7:]
-
+    token = authorization.removeprefix("Bearer ")
     tenant = decode_token(token)
     logger.info("Chat request from user=%s gym=%s", tenant.user_id, tenant.gym_id)
 
@@ -120,4 +117,4 @@ async def delete_conversation(
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8001)
+    uvicorn.run(app, host="0.0.0.0", port=config.PORT)

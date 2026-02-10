@@ -71,6 +71,10 @@ class APIClient:
         response = await self._http.request("DELETE", endpoint, json=data)
         return self._handle_response(response)
 
+    async def aclose(self):
+        """Close the underlying HTTP client."""
+        await self._http.aclose()
+
 
 # Request-scoped API client using contextvars (safe for concurrent async requests)
 _current_client: contextvars.ContextVar[APIClient | None] = contextvars.ContextVar(
@@ -78,8 +82,16 @@ _current_client: contextvars.ContextVar[APIClient | None] = contextvars.ContextV
 )
 
 
+async def cleanup_api_client():
+    """Close the current API client's HTTP connection."""
+    client = _current_client.get()
+    if client:
+        await client.aclose()
+        _current_client.set(None)
+
+
 def set_api_client(token: str, branch_id: int = None):
-    """Set the API client for current request context"""
+    """Set the API client for current request context."""
     _current_client.set(APIClient(token, branch_id))
 
 

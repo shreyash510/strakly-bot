@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client, get_current_branch_id, generate_password, extract_list, extract_paginated
+from .base import get_api_client, get_current_branch_id, generate_password, extract_list
 
 
 @tool
@@ -94,9 +94,9 @@ async def get_clients_list() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/users", {"role": "client", "page": 1, "limit": 5})
+        response = await client.get("/users", {"role": "client", "noPagination": "true"})
 
-        clients_list, pagination = extract_paginated(response)
+        clients_list = extract_list(response)
 
         if len(clients_list) == 0:
             return {
@@ -106,12 +106,8 @@ async def get_clients_list() -> dict:
             }
 
         return {
-            "count": pagination.get("total", len(clients_list)),
-            "totalPages": pagination.get("totalPages", 1),
-            "page": 1,
+            "count": len(clients_list),
             "clients": [{"id": c.get("id"), "name": c.get("name"), "email": c.get("email"), "status": c.get("status")} for c in clients_list],
-            "endpoint": "/users",
-            "filters": {"role": "client"},
         }
     except Exception as e:
         return {"error": str(e)}
@@ -131,7 +127,7 @@ async def get_client_details(search: str) -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/users", {"role": "client", "search": search, "limit": 5})
+        response = await client.get("/users", {"role": "client", "search": search, "noPagination": "true"})
         return response
     except Exception as e:
         return {"error": str(e)}

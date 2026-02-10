@@ -1,9 +1,9 @@
 from langchain_core.tools import tool
-from .base import get_api_client, get_current_branch_id, generate_password, extract_list, extract_paginated
+from .base import get_api_client, get_current_branch_id, generate_password, extract_list
 
 
 @tool
-async def get_enquiries_list(page: int = 1, limit: int = 5) -> dict:
+async def get_enquiries_list() -> dict:
     """Get list of enquiries/leads (users with onboarding/pending status).
 
     Use this tool when user asks about:
@@ -11,37 +11,23 @@ async def get_enquiries_list(page: int = 1, limit: int = 5) -> dict:
     - Pending enquiries
     - New leads
     - Follow-ups needed
-    - Next/previous page of enquiries
-    - Specific page of enquiries
-
-    Args:
-        page: Page number to fetch (default: 1). Use higher numbers when user asks for next page or a specific page.
-        limit: Number of enquiries per page (default: 5).
     """
     client = get_api_client()
     try:
-        response = await client.get("/users", {"role": "client", "status": "onboarding", "page": page, "limit": limit})
+        response = await client.get("/users", {"role": "client", "status": "onboarding", "noPagination": "true"})
 
-        enquiries, pagination = extract_paginated(response)
+        enquiries = extract_list(response)
 
-        total = pagination.get("total", len(enquiries))
-        total_pages = pagination.get("totalPages", 1)
-        current_page = pagination.get("page", page)
-
-        if total == 0:
+        if len(enquiries) == 0:
             return {
-                "total": 0,
+                "count": 0,
                 "enquiries": [],
                 "message": "No enquiries found."
             }
 
         return {
-            "count": total,
-            "totalPages": total_pages,
-            "page": current_page,
+            "count": len(enquiries),
             "enquiries": [{"id": e.get("id"), "name": e.get("name"), "email": e.get("email"), "status": e.get("status")} for e in enquiries],
-            "endpoint": "/users",
-            "filters": {"role": "client", "status": "onboarding"},
         }
     except Exception as e:
         return {"error": str(e)}
