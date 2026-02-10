@@ -1,10 +1,11 @@
 import logging
 
-from fastapi import FastAPI, Header, HTTPException, status
+from fastapi import FastAPI, Header, HTTPException, Request, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from models import ChatRequest, ChatResponse, HealthResponse
 from auth import decode_token
-from agent import process_chat, clear_conversation
+from agent import process_chat, process_chat_stream, clear_conversation
 from config import config
 
 logging.basicConfig(
@@ -41,39 +42,55 @@ def health():
     return HealthResponse(status="healthy", version="1.0.0")
 
 
-@app.post("/chat", response_model=ChatResponse)
+@app.post("/chat")
 async def chat(
-    request: ChatRequest,
+    request_body: ChatRequest,
+    raw_request: Request,
     authorization: str = Header(..., description="Bearer token"),
 ):
     """
     Chat endpoint for AI assistant.
-
-    Send a message and receive an AI-generated response based on your gym data.
+    Supports both JSON and SSE streaming responses based on Accept header.
     """
-    # Validate and decode token
     if not authorization:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authorization header required",
         )
 
-    # Extract token (remove 'Bearer ' prefix if present)
     token = authorization
     if token.startswith("Bearer "):
         token = token[7:]
 
-    # Decode and validate token
     tenant = decode_token(token)
     logger.info("Chat request from user=%s gym=%s", tenant.user_id, tenant.gym_id)
 
-    # Process chat message
+    accept = raw_request.headers.get("accept", "")
+
+    # Streaming SSE response
+    if "text/event-stream" in accept:
+        return StreamingResponse(
+            process_chat_stream(
+                message=request_body.message,
+                token=token,
+                tenant=tenant,
+                conversation_id=request_body.conversation_id,
+                branch_id=request_body.branch_id,
+            ),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "X-Accel-Buffering": "no",
+            },
+        )
+
+    # Regular JSON response
     result = await process_chat(
-        message=request.message,
+        message=request_body.message,
         token=token,
         tenant=tenant,
-        conversation_id=request.conversation_id,
-        branch_id=request.branch_id,
+        conversation_id=request_body.conversation_id,
+        branch_id=request_body.branch_id,
     )
 
     return ChatResponse(
@@ -81,6 +98,7 @@ async def chat(
         response=result["response"],
         conversation_id=result["conversation_id"],
         tools_used=result["tools_used"],
+        suggested_questions=result.get("suggested_questions", []),
     )
 
 
