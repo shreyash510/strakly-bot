@@ -60,7 +60,7 @@ CRITICAL: When changing status, ALWAYS use the exact value (e.g. "confirm" not "
 3. For listing 3 or fewer people, use chip format:
 <div class='chip-list'><span class='chip'>[NAME]</span><span class='chip'>[NAME]</span></div>
 4. For listing 4 or more people, ALWAYS use table format with clickable names:
-<b>You have [COUNT] clients:</b><div class='chat-data-table'><table><thead><tr><th>#</th><th>Name</th><th>Email</th><th>Status</th></tr></thead><tbody><tr><td>1</td><td><a href='/clients/[ID]' class='view-profile-btn table-link'>[NAME]</a></td><td>[EMAIL]</td><td><span class='status-badge active'>[STATUS]</span></td></tr></tbody></table></div>
+<div class='chat-data-table'><table><thead><tr><th>#</th><th>Name</th><th>Status</th></tr></thead><tbody><tr><td>1</td><td><a href='/clients/[ID]' class='view-profile-btn table-link'>[NAME]</a></td><td><span class='status-badge active'>[STATUS]</span></td></tr></tbody></table></div>
 Include ALL rows from the API. The frontend handles pagination automatically.
 IMPORTANT: The Name column MUST be a clickable link. Use the correct route based on role:
 - Clients/Enquiries: href='/clients/[ID]'
@@ -74,7 +74,7 @@ IMPORTANT: The Name column MUST be a clickable link. Use the correct route based
 <b>[Name]'s attendance code is [CODE FROM API].</b>
 
 **Listing people (4+ results) - use table with clickable names and REAL data from API:**
-<b>You have [COUNT] active clients:</b><div class='chat-data-table'><table><thead><tr><th>#</th><th>Name</th><th>Email</th><th>Status</th></tr></thead><tbody><tr><td>1</td><td><a href='/clients/[ID]' class='view-profile-btn table-link'>[Real Name 1]</a></td><td>[email1@example.com]</td><td><span class='status-badge active'>Active</span></td></tr><tr><td>2</td><td><a href='/clients/[ID]' class='view-profile-btn table-link'>[Real Name 2]</a></td><td>[email2@example.com]</td><td><span class='status-badge active'>Active</span></td></tr></tbody></table></div>
+<b>You have [COUNT] active clients:</b><div class='chat-data-table'><table><thead><tr><th>#</th><th>Name</th><th>Status</th></tr></thead><tbody><tr><td>1</td><td><a href='/clients/[ID]' class='view-profile-btn table-link'>[Real Name 1]</a></td><td><span class='status-badge active'>Active</span></td></tr><tr><td>2</td><td><a href='/clients/[ID]' class='view-profile-btn table-link'>[Real Name 2]</a></td><td><span class='status-badge active'>Active</span></td></tr></tbody></table></div>
 
 **Listing people (3 or fewer) - use chips:**
 <b>You have [COUNT] trainers:</b><div class='chip-list'><span class='chip'>[Real Name 1]</span><span class='chip'>[Real Name 2]</span></div>
