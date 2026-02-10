@@ -13,6 +13,7 @@ class ChatResponse(BaseModel):
     response: str
     conversation_id: str
     tools_used: list[str] = []
+    suggested_questions: list[str] = []
 
 
 class HealthResponse(BaseModel):
