@@ -109,3 +109,16 @@ def extract_list(response: dict | list, key: str = "data") -> list:
     """Extract list from API response, handling both {data: [...]} and [...] formats."""
     data = response.get(key, response) if isinstance(response, dict) else response
     return data if isinstance(data, list) else []
+
+
+def extract_paginated(response: dict | list, key: str = "data") -> tuple[list, dict]:
+    """Extract list + pagination metadata from API response.
+    Returns (items, pagination_dict).
+    """
+    if isinstance(response, dict):
+        data = response.get(key, [])
+        if not isinstance(data, list):
+            data = []
+        pagination = response.get("pagination", {})
+        return data, pagination
+    return (response if isinstance(response, list) else []), {}

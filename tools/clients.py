@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client, get_current_branch_id, generate_password, extract_list
+from .base import get_api_client, get_current_branch_id, generate_password, extract_list, extract_paginated
 
 
 @tool
@@ -94,9 +94,9 @@ async def get_clients_list() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/users", {"role": "client", "limit": 50})
+        response = await client.get("/users", {"role": "client", "page": 1, "limit": 5})
 
-        clients_list = extract_list(response)
+        clients_list, pagination = extract_paginated(response)
 
         if len(clients_list) == 0:
             return {
@@ -105,10 +105,13 @@ async def get_clients_list() -> dict:
                 "message": "No clients found. The gym has no registered clients yet."
             }
 
-        # Return structured response with actual client names
         return {
-            "count": len(clients_list),
-            "clients": [{"id": c.get("id"), "name": c.get("name"), "email": c.get("email"), "status": c.get("status"), "avatar": c.get("avatar")} for c in clients_list]
+            "count": pagination.get("total", len(clients_list)),
+            "totalPages": pagination.get("totalPages", 1),
+            "page": 1,
+            "clients": [{"id": c.get("id"), "name": c.get("name"), "email": c.get("email"), "status": c.get("status")} for c in clients_list],
+            "endpoint": "/users",
+            "filters": {"role": "client"},
         }
     except Exception as e:
         return {"error": str(e)}

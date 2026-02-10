@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client, extract_list
+from .base import get_api_client, extract_list, extract_paginated
 
 
 @tool
@@ -94,14 +94,13 @@ async def get_active_membership_clients() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/memberships", {"status": "active", "limit": 50})
+        response = await client.get("/memberships", {"status": "active", "page": 1, "limit": 5})
 
         if not response:
             return {"error": "Could not fetch memberships"}
 
-        memberships = extract_list(response)
+        memberships, pagination = extract_paginated(response)
 
-        # Format the response with client names and membership info
         clients_with_memberships = []
         for m in memberships:
             user = m.get("user", {})
@@ -111,15 +110,16 @@ async def get_active_membership_clients() -> dict:
                 "clientName": user.get("name"),
                 "clientEmail": user.get("email"),
                 "planName": plan.get("name"),
-                "startDate": m.get("startDate"),
-                "endDate": m.get("endDate"),
                 "status": m.get("status"),
-                "paymentStatus": m.get("paymentStatus"),
             })
 
         return {
-            "count": len(clients_with_memberships),
-            "clients": clients_with_memberships
+            "count": pagination.get("total", len(clients_with_memberships)),
+            "totalPages": pagination.get("totalPages", 1),
+            "page": 1,
+            "clients": clients_with_memberships,
+            "endpoint": "/memberships",
+            "filters": {"status": "active"},
         }
     except Exception as e:
         return {"error": str(e)}

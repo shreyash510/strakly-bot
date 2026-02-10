@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client, get_current_branch_id, generate_password, extract_list
+from .base import get_api_client, get_current_branch_id, generate_password, extract_list, extract_paginated
 
 
 @tool
@@ -14,9 +14,9 @@ async def get_enquiries_list() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/users", {"role": "client", "status": "onboarding", "limit": 50})
+        response = await client.get("/users", {"role": "client", "status": "onboarding", "page": 1, "limit": 5})
 
-        enquiries = extract_list(response)
+        enquiries, pagination = extract_paginated(response)
 
         if len(enquiries) == 0:
             return {
@@ -26,8 +26,12 @@ async def get_enquiries_list() -> dict:
             }
 
         return {
-            "count": len(enquiries),
-            "enquiries": [{"id": e.get("id"), "name": e.get("name"), "email": e.get("email"), "status": e.get("status"), "phone": e.get("phone")} for e in enquiries]
+            "count": pagination.get("total", len(enquiries)),
+            "totalPages": pagination.get("totalPages", 1),
+            "page": 1,
+            "enquiries": [{"id": e.get("id"), "name": e.get("name"), "email": e.get("email"), "status": e.get("status")} for e in enquiries],
+            "endpoint": "/users",
+            "filters": {"role": "client", "status": "onboarding"},
         }
     except Exception as e:
         return {"error": str(e)}

@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client, get_current_branch_id, generate_password, extract_list
+from .base import get_api_client, get_current_branch_id, generate_password, extract_list, extract_paginated
 
 
 @tool
@@ -15,8 +15,20 @@ async def get_managers_list() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/users", {"role": "manager", "limit": 20})
-        return response
+        response = await client.get("/users", {"role": "manager", "page": 1, "limit": 5})
+        managers, pagination = extract_paginated(response)
+
+        if len(managers) == 0:
+            return {"count": 0, "managers": [], "message": "No managers found."}
+
+        return {
+            "count": pagination.get("total", len(managers)),
+            "totalPages": pagination.get("totalPages", 1),
+            "page": 1,
+            "managers": [{"id": m.get("id"), "name": m.get("name"), "email": m.get("email"), "status": m.get("status")} for m in managers],
+            "endpoint": "/users",
+            "filters": {"role": "manager"},
+        }
     except Exception as e:
         return {"error": str(e)}
 
@@ -111,8 +123,20 @@ async def get_branch_admins_list() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/users", {"role": "branch_admin", "limit": 20})
-        return response
+        response = await client.get("/users", {"role": "branch_admin", "page": 1, "limit": 5})
+        admins, pagination = extract_paginated(response)
+
+        if len(admins) == 0:
+            return {"count": 0, "branchAdmins": [], "message": "No branch admins found."}
+
+        return {
+            "count": pagination.get("total", len(admins)),
+            "totalPages": pagination.get("totalPages", 1),
+            "page": 1,
+            "branchAdmins": [{"id": a.get("id"), "name": a.get("name"), "email": a.get("email"), "status": a.get("status")} for a in admins],
+            "endpoint": "/users",
+            "filters": {"role": "branch_admin"},
+        }
     except Exception as e:
         return {"error": str(e)}
 
