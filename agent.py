@@ -1,5 +1,6 @@
 import json
 import logging
+import time
 import uuid
 from typing import AsyncGenerator
 
@@ -8,13 +9,36 @@ from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 
 from config import config
 from prompts import SYSTEM_PROMPT
-from tools import ALL_TOOLS, TOOL_MAP, set_api_client
+from tools import ALL_TOOLS, TOOL_MAP, set_api_client, cleanup_api_client
 from auth import TenantContext
 
 logger = logging.getLogger(__name__)
 
 # In-memory conversation store (temporary per session)
-conversations: dict[str, list] = {}
+# Each entry stores (messages_list, last_accessed_timestamp)
+conversations: dict[str, tuple[list, float]] = {}
+
+# Evict conversations older than 30 minutes
+_CONVERSATION_TTL = 30 * 60
+
+# Reusable LLM client for suggestion generation
+_suggestion_llm = ChatOpenAI(
+    model=config.OPENAI_MODEL,
+    temperature=0.7,
+    max_tokens=300,
+    api_key=config.OPENAI_API_KEY,
+    request_timeout=15,
+)
+
+
+def _evict_stale_conversations():
+    """Remove conversations not accessed in the last 30 minutes."""
+    now = time.time()
+    stale = [cid for cid, (_, ts) in conversations.items() if now - ts > _CONVERSATION_TTL]
+    for cid in stale:
+        del conversations[cid]
+    if stale:
+        logger.info("Evicted %d stale conversations", len(stale))
 
 
 def _setup_chat(
@@ -25,6 +49,8 @@ def _setup_chat(
     branch_id: int = None,
 ) -> tuple[str, list, list, object]:
     """Common setup for both streaming and non-streaming chat."""
+    _evict_stale_conversations()
+
     effective_branch_id = branch_id if branch_id is not None else tenant.branch_id
     set_api_client(token, effective_branch_id)
 
@@ -32,25 +58,27 @@ def _setup_chat(
         conversation_id = str(uuid.uuid4())
 
     if conversation_id not in conversations:
-        conversations[conversation_id] = []
+        conversations[conversation_id] = ([], time.time())
 
-    conversation = conversations[conversation_id]
+    conv_messages, _ = conversations[conversation_id]
+    conversations[conversation_id] = (conv_messages, time.time())
 
     messages = [SystemMessage(content=SYSTEM_PROMPT)]
-    for msg in conversation[-20:]:
+    for msg in conv_messages[-20:]:
         messages.append(msg)
 
     user_message = HumanMessage(content=message)
     messages.append(user_message)
-    conversation.append(user_message)
+    conv_messages.append(user_message)
 
     llm = ChatOpenAI(
         model=config.OPENAI_MODEL,
         temperature=0,
         api_key=config.OPENAI_API_KEY,
+        request_timeout=60,
     ).bind_tools(ALL_TOOLS)
 
-    return conversation_id, conversation, messages, llm
+    return conversation_id, conv_messages, messages, llm
 
 
 async def _execute_tool_calls(tool_calls: list, messages: list, conversation: list) -> list[str]:
@@ -83,8 +111,9 @@ async def _execute_tool_calls(tool_calls: list, messages: list, conversation: li
 
 def _trim_conversation(conversation_id: str):
     """Limit conversation history size."""
-    if len(conversations.get(conversation_id, [])) > 40:
-        conversations[conversation_id] = conversations[conversation_id][-40:]
+    entry = conversations.get(conversation_id)
+    if entry and len(entry[0]) > 40:
+        conversations[conversation_id] = (entry[0][-40:], entry[1])
 
 
 def _strip_html(text: str) -> str:
@@ -96,12 +125,6 @@ def _strip_html(text: str) -> str:
 async def _generate_suggestions(user_message: str, assistant_response: str) -> list[str]:
     """Generate 3 follow-up question suggestions based on the conversation."""
     try:
-        suggestion_llm = ChatOpenAI(
-            model=config.OPENAI_MODEL,
-            temperature=0.7,
-            max_tokens=300,
-            api_key=config.OPENAI_API_KEY,
-        )
         clean_response = _strip_html(assistant_response)[:800]
         prompt = (
             "You are a gym management assistant. The user just had this conversation with you.\n\n"
@@ -119,7 +142,7 @@ async def _generate_suggestions(user_message: str, assistant_response: str) -> l
             "- If you showed a client profile → 'Update their phone', 'Renew membership', 'Payment history'\n\n"
             "Return ONLY a JSON array of 3 strings. No explanation, no markdown, just the array."
         )
-        result = await suggestion_llm.ainvoke([HumanMessage(content=prompt)])
+        result = await _suggestion_llm.ainvoke([HumanMessage(content=prompt)])
         # Strip markdown code fences if present
         content = result.content.strip()
         if content.startswith("```"):
@@ -160,6 +183,7 @@ async def process_chat(
 
     final_response = response.content if response.content else "I couldn't process that request. Please try again."
     _trim_conversation(conversation_id)
+    await cleanup_api_client()
 
     suggested_questions = await _generate_suggestions(message, final_response)
 
@@ -238,6 +262,7 @@ async def process_chat_stream(
             break
 
     _trim_conversation(conversation_id)
+    await cleanup_api_client()
     logger.info("Chat streamed: conversation=%s, tools=%s", conversation_id, tools_used)
 
     # Generate and send suggested follow-up questions
@@ -250,6 +275,5 @@ async def process_chat_stream(
 
 
 def clear_conversation(conversation_id: str):
-    """Clear a conversation from memory"""
-    if conversation_id in conversations:
-        del conversations[conversation_id]
+    """Clear a conversation from memory."""
+    conversations.pop(conversation_id, None)

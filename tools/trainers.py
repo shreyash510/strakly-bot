@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client, extract_paginated
+from .base import get_api_client, extract_list
 
 
 @tool
@@ -13,19 +13,15 @@ async def get_trainers_list() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/users", {"role": "trainer", "page": 1, "limit": 5})
-        trainers, pagination = extract_paginated(response)
+        response = await client.get("/users", {"role": "trainer", "noPagination": "true"})
+        trainers = extract_list(response)
 
         if len(trainers) == 0:
             return {"count": 0, "trainers": [], "message": "No trainers found."}
 
         return {
-            "count": pagination.get("total", len(trainers)),
-            "totalPages": pagination.get("totalPages", 1),
-            "page": 1,
+            "count": len(trainers),
             "trainers": [{"id": t.get("id"), "name": t.get("name"), "email": t.get("email"), "status": t.get("status")} for t in trainers],
-            "endpoint": "/users",
-            "filters": {"role": "trainer"},
         }
     except Exception as e:
         return {"error": str(e)}

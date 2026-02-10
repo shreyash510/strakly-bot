@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client, extract_list, extract_paginated
+from .base import get_api_client, extract_list
 
 
 @tool
@@ -20,7 +20,7 @@ async def get_client_membership(search: str) -> dict:
     client = get_api_client()
     try:
         # First search for the client to get their ID
-        users_response = await client.get("/users", {"role": "client", "search": search, "limit": 5})
+        users_response = await client.get("/users", {"role": "client", "search": search, "noPagination": "true"})
 
         if not users_response:
             return {"error": "Client not found"}
@@ -94,12 +94,12 @@ async def get_active_membership_clients() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/memberships", {"status": "active", "page": 1, "limit": 5})
+        response = await client.get("/memberships", {"status": "active", "limit": 500})
 
         if not response:
             return {"error": "Could not fetch memberships"}
 
-        memberships, pagination = extract_paginated(response)
+        memberships = extract_list(response)
 
         clients_with_memberships = []
         for m in memberships:
@@ -114,12 +114,8 @@ async def get_active_membership_clients() -> dict:
             })
 
         return {
-            "count": pagination.get("total", len(clients_with_memberships)),
-            "totalPages": pagination.get("totalPages", 1),
-            "page": 1,
+            "count": len(clients_with_memberships),
             "clients": clients_with_memberships,
-            "endpoint": "/memberships",
-            "filters": {"status": "active"},
         }
     except Exception as e:
         return {"error": str(e)}

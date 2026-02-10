@@ -1,4 +1,4 @@
-from .base import APIClient, set_api_client, get_api_client, generate_password, extract_list, extract_paginated
+from .base import APIClient, set_api_client, get_api_client, cleanup_api_client, generate_password, extract_list
 from .clients import (
     get_clients_stats, get_dashboard_overview, get_clients_list,
     get_client_details, get_client_by_id, get_expiring_memberships,

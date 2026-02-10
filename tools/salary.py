@@ -18,9 +18,9 @@ async def get_salary_by_name(search: str) -> dict:
     client = get_api_client()
     try:
         # First search for the staff member in managers
-        managers = await client.get("/users", {"role": "manager", "search": search, "limit": 5})
-        trainers = await client.get("/users", {"role": "trainer", "search": search, "limit": 5})
-        branch_admins = await client.get("/users", {"role": "branch_admin", "search": search, "limit": 5})
+        managers = await client.get("/users", {"role": "manager", "search": search, "noPagination": "true"})
+        trainers = await client.get("/users", {"role": "trainer", "search": search, "noPagination": "true"})
+        branch_admins = await client.get("/users", {"role": "branch_admin", "search": search, "noPagination": "true"})
 
         # Find the staff member
         staff = None

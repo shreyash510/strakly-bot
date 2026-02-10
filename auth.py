@@ -29,10 +29,6 @@ class TenantContext:
 def decode_token(token: str) -> TenantContext:
     """Decode JWT token and extract tenant context"""
     try:
-        # Remove 'Bearer ' prefix if present
-        if token.startswith("Bearer "):
-            token = token[7:]
-
         payload = jwt.decode(
             token,
             config.JWT_SECRET,
@@ -54,8 +50,8 @@ def decode_token(token: str) -> TenantContext:
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token has expired",
         )
-    except jwt.InvalidTokenError as e:
+    except jwt.InvalidTokenError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Invalid token: {str(e)}",
+            detail="Invalid token",
         )

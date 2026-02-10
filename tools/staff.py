@@ -1,5 +1,6 @@
+import asyncio
 from langchain_core.tools import tool
-from .base import get_api_client, get_current_branch_id, generate_password, extract_list, extract_paginated
+from .base import get_api_client, get_current_branch_id, generate_password, extract_list
 
 
 @tool
@@ -15,19 +16,15 @@ async def get_managers_list() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/users", {"role": "manager", "page": 1, "limit": 5})
-        managers, pagination = extract_paginated(response)
+        response = await client.get("/users", {"role": "manager", "noPagination": "true"})
+        managers = extract_list(response)
 
         if len(managers) == 0:
             return {"count": 0, "managers": [], "message": "No managers found."}
 
         return {
-            "count": pagination.get("total", len(managers)),
-            "totalPages": pagination.get("totalPages", 1),
-            "page": 1,
+            "count": len(managers),
             "managers": [{"id": m.get("id"), "name": m.get("name"), "email": m.get("email"), "status": m.get("status")} for m in managers],
-            "endpoint": "/users",
-            "filters": {"role": "manager"},
         }
     except Exception as e:
         return {"error": str(e)}
@@ -46,12 +43,12 @@ async def get_staff_list() -> dict:
     """
     client = get_api_client()
     try:
-        # Get managers
-        managers = await client.get("/users", {"role": "manager", "limit": 20})
-        # Get trainers
-        trainers = await client.get("/users", {"role": "trainer", "limit": 20})
-        # Get branch admins
-        branch_admins = await client.get("/users", {"role": "branch_admin", "limit": 20})
+        # Fetch all roles in parallel
+        managers, trainers, branch_admins = await asyncio.gather(
+            client.get("/users", {"role": "manager", "noPagination": "true"}),
+            client.get("/users", {"role": "trainer", "noPagination": "true"}),
+            client.get("/users", {"role": "branch_admin", "noPagination": "true"}),
+        )
 
         managers_list = extract_list(managers)
         trainers_list = extract_list(trainers)
@@ -90,12 +87,12 @@ async def get_staff_details(search: str) -> dict:
     """
     client = get_api_client()
     try:
-        # Search in managers
-        managers = await client.get("/users", {"role": "manager", "search": search, "limit": 5})
-        # Search in trainers
-        trainers = await client.get("/users", {"role": "trainer", "search": search, "limit": 5})
-        # Search in branch admins
-        branch_admins = await client.get("/users", {"role": "branch_admin", "search": search, "limit": 5})
+        # Search all roles in parallel
+        managers, trainers, branch_admins = await asyncio.gather(
+            client.get("/users", {"role": "manager", "search": search, "noPagination": "true"}),
+            client.get("/users", {"role": "trainer", "search": search, "noPagination": "true"}),
+            client.get("/users", {"role": "branch_admin", "search": search, "noPagination": "true"}),
+        )
 
         results = []
         for role, data in [("manager", managers), ("trainer", trainers), ("branch_admin", branch_admins)]:
@@ -123,19 +120,15 @@ async def get_branch_admins_list() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/users", {"role": "branch_admin", "page": 1, "limit": 5})
-        admins, pagination = extract_paginated(response)
+        response = await client.get("/users", {"role": "branch_admin", "noPagination": "true"})
+        admins = extract_list(response)
 
         if len(admins) == 0:
             return {"count": 0, "branchAdmins": [], "message": "No branch admins found."}
 
         return {
-            "count": pagination.get("total", len(admins)),
-            "totalPages": pagination.get("totalPages", 1),
-            "page": 1,
+            "count": len(admins),
             "branchAdmins": [{"id": a.get("id"), "name": a.get("name"), "email": a.get("email"), "status": a.get("status")} for a in admins],
-            "endpoint": "/users",
-            "filters": {"role": "branch_admin"},
         }
     except Exception as e:
         return {"error": str(e)}
