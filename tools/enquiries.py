@@ -14,7 +14,7 @@ async def get_enquiries_list() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/dashboard/admin/new-inquiries", {"limit": 10})
+        response = await client.get("/dashboard/admin/new-inquiries", {"limit": 50})
         return response
     except Exception as e:
         return {"error": str(e)}
