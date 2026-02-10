@@ -87,6 +87,12 @@ def _trim_conversation(conversation_id: str):
         conversations[conversation_id] = conversations[conversation_id][-40:]
 
 
+def _strip_html(text: str) -> str:
+    """Remove HTML tags from text for suggestion generation."""
+    import re
+    return re.sub(r'<[^>]+>', ' ', text).strip()
+
+
 async def _generate_suggestions(user_message: str, assistant_response: str) -> list[str]:
     """Generate 3 follow-up question suggestions based on the conversation."""
     try:
@@ -96,12 +102,17 @@ async def _generate_suggestions(user_message: str, assistant_response: str) -> l
             max_tokens=150,
             api_key=config.OPENAI_API_KEY,
         )
+        clean_response = _strip_html(assistant_response)[:300]
         prompt = (
-            "Based on this gym management assistant conversation, suggest exactly 3 short follow-up questions "
-            "the user might want to ask next. Each question should be under 50 characters. "
+            "You are a gym management assistant. Based on this conversation, suggest exactly 3 short, "
+            "contextual follow-up questions the user would likely ask next. "
+            "Questions MUST be directly related to what was just discussed. "
+            "Examples: if user asked about client count, suggest 'Show all clients', 'Show expired memberships', etc. "
+            "If user asked about revenue, suggest 'Revenue last month', 'Pending payments', etc. "
+            "Each question must be under 40 characters. "
             "Return ONLY a JSON array of 3 strings, nothing else.\n\n"
             f"User asked: {user_message}\n"
-            f"Assistant replied: {assistant_response[:500]}"
+            f"Assistant replied: {clean_response}"
         )
         result = await suggestion_llm.ainvoke([HumanMessage(content=prompt)])
         questions = json.loads(result.content)

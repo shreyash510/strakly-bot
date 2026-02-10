@@ -94,7 +94,7 @@ async def get_clients_list() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/users", {"role": "client", "limit": 20})
+        response = await client.get("/users", {"role": "client", "limit": 50})
 
         clients_list = extract_list(response)
 
