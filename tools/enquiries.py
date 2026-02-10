@@ -14,8 +14,21 @@ async def get_enquiries_list() -> dict:
     """
     client = get_api_client()
     try:
-        response = await client.get("/dashboard/admin/new-inquiries", {"limit": 50})
-        return response
+        response = await client.get("/users", {"role": "client", "status": "onboarding", "limit": 50})
+
+        enquiries = extract_list(response)
+
+        if len(enquiries) == 0:
+            return {
+                "count": 0,
+                "enquiries": [],
+                "message": "No enquiries found."
+            }
+
+        return {
+            "count": len(enquiries),
+            "enquiries": [{"id": e.get("id"), "name": e.get("name"), "email": e.get("email"), "status": e.get("status"), "phone": e.get("phone")} for e in enquiries]
+        }
     except Exception as e:
         return {"error": str(e)}
 
