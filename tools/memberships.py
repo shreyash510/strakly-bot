@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client
+from .base import get_api_client, extract_list
 
 
 @tool
@@ -25,13 +25,12 @@ async def get_client_membership(search: str) -> dict:
         if not users_response:
             return {"error": "Client not found"}
 
-        # Handle both list response and direct response
-        users = users_response if isinstance(users_response, list) else users_response.get("data", users_response)
-        if isinstance(users, list) and not users:
+        users = extract_list(users_response)
+        if not users:
             return {"error": f"No client found matching '{search}'"}
 
         # Get the first matching client
-        user = users[0] if isinstance(users, list) else users
+        user = users[0]
         user_id = user.get("id")
 
         if not user_id:
@@ -100,7 +99,7 @@ async def get_active_membership_clients() -> dict:
         if not response:
             return {"error": "Could not fetch memberships"}
 
-        memberships = response.get("data", []) if isinstance(response, dict) else response
+        memberships = extract_list(response)
 
         # Format the response with client names and membership info
         clients_with_memberships = []

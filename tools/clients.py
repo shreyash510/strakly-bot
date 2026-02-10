@@ -1,13 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client, get_current_branch_id
-import secrets
-import string
-
-
-def generate_password(length: int = 12) -> str:
-    """Generate a secure random password"""
-    alphabet = string.ascii_letters + string.digits
-    return ''.join(secrets.choice(alphabet) for _ in range(length))
+from .base import get_api_client, get_current_branch_id, generate_password, extract_list
 
 
 @tool
@@ -104,9 +96,7 @@ async def get_clients_list() -> dict:
     try:
         response = await client.get("/users", {"role": "client", "limit": 20})
 
-        # Extract data properly
-        clients = response.get("data", response) if isinstance(response, dict) else response
-        clients_list = clients if isinstance(clients, list) else []
+        clients_list = extract_list(response)
 
         if len(clients_list) == 0:
             return {

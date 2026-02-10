@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client
+from .base import get_api_client, extract_list
 
 
 @tool
@@ -26,22 +26,12 @@ async def get_salary_by_name(search: str) -> dict:
         staff = None
         staff_role = None
 
-        managers_data = managers.get("data", managers) if isinstance(managers, dict) else managers
-        if isinstance(managers_data, list) and len(managers_data) > 0:
-            staff = managers_data[0]
-            staff_role = "manager"
-
-        if not staff:
-            trainers_data = trainers.get("data", trainers) if isinstance(trainers, dict) else trainers
-            if isinstance(trainers_data, list) and len(trainers_data) > 0:
-                staff = trainers_data[0]
-                staff_role = "trainer"
-
-        if not staff:
-            branch_admins_data = branch_admins.get("data", branch_admins) if isinstance(branch_admins, dict) else branch_admins
-            if isinstance(branch_admins_data, list) and len(branch_admins_data) > 0:
-                staff = branch_admins_data[0]
-                staff_role = "branch_admin"
+        for role, data in [("manager", managers), ("trainer", trainers), ("branch_admin", branch_admins)]:
+            items = extract_list(data)
+            if items:
+                staff = items[0]
+                staff_role = role
+                break
 
         if not staff:
             return {"error": f"No staff member found matching '{search}'"}
@@ -52,7 +42,7 @@ async def get_salary_by_name(search: str) -> dict:
         # Get salary records for this staff member
         salary_response = await client.get("/salary", {"staffId": staff_id, "limit": 12})
 
-        salary_data = salary_response if isinstance(salary_response, list) else salary_response.get("data", [])
+        salary_data = extract_list(salary_response)
 
         if not salary_data or len(salary_data) == 0:
             return {
