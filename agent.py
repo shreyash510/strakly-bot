@@ -99,25 +99,34 @@ async def _generate_suggestions(user_message: str, assistant_response: str) -> l
         suggestion_llm = ChatOpenAI(
             model=config.OPENAI_MODEL,
             temperature=0.7,
-            max_tokens=150,
+            max_tokens=300,
             api_key=config.OPENAI_API_KEY,
         )
-        clean_response = _strip_html(assistant_response)[:300]
+        clean_response = _strip_html(assistant_response)[:800]
         prompt = (
-            "You are a gym management assistant. Based on this conversation, suggest exactly 3 short, "
-            "contextual follow-up questions the user would likely ask next. "
-            "Questions MUST be directly related to what was just discussed. "
-            "Examples: if user asked about client count, suggest 'Show all clients', 'Show expired memberships', etc. "
-            "If user asked about revenue, suggest 'Revenue last month', 'Pending payments', etc. "
-            "Each question must be under 40 characters. "
-            "Return ONLY a JSON array of 3 strings, nothing else.\n\n"
-            f"User asked: {user_message}\n"
-            f"Assistant replied: {clean_response}"
+            "You are a gym management assistant. The user just had this conversation with you.\n\n"
+            f"USER: {user_message}\n"
+            f"ASSISTANT: {clean_response}\n\n"
+            "Based on EXACTLY what was discussed above, suggest 3 natural follow-up questions "
+            "the user would likely ask next. The questions must be:\n"
+            "- Directly related to the topic/data just discussed (NOT generic gym questions)\n"
+            "- Short (under 40 characters each)\n"
+            "- Actionable and specific\n\n"
+            "For example:\n"
+            "- If you showed client count → 'List all active clients', 'Expired memberships', 'New clients this month'\n"
+            "- If you showed revenue → 'Revenue last month', 'Pending payments', 'Top paying clients'\n"
+            "- If you showed attendance → 'Who came today?', 'Weekly attendance trend', 'Most active clients'\n"
+            "- If you showed a client profile → 'Update their phone', 'Renew membership', 'Payment history'\n\n"
+            "Return ONLY a JSON array of 3 strings. No explanation, no markdown, just the array."
         )
         result = await suggestion_llm.ainvoke([HumanMessage(content=prompt)])
-        questions = json.loads(result.content)
+        # Strip markdown code fences if present
+        content = result.content.strip()
+        if content.startswith("```"):
+            content = content.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+        questions = json.loads(content)
         if isinstance(questions, list):
-            return [q for q in questions[:3] if isinstance(q, str)]
+            return [q for q in questions[:3] if isinstance(q, str) and len(q) <= 50]
     except Exception as e:
         logger.warning("Failed to generate suggestions: %s", e)
     return []
