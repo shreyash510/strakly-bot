@@ -41,34 +41,43 @@ class APIClient:
             return {"success": True}
         return response.json()
 
-    def _inject_branch(self, params: dict) -> dict:
-        """Inject branch_id into params/data if set."""
+    def _inject_branch_params(self, params: dict) -> dict:
+        """Inject branch_id into query params if set."""
         if self.branch_id is not None:
             params["branchId"] = self.branch_id
         return params
 
+    def _branch_query_params(self) -> dict:
+        """Return branch_id as query params dict for POST/PATCH/DELETE."""
+        if self.branch_id is not None:
+            return {"branchId": self.branch_id}
+        return {}
+
     async def get(self, endpoint: str, params: dict = None) -> dict:
         """Make GET request to backend API"""
-        params = self._inject_branch(params or {})
+        params = self._inject_branch_params(params or {})
         response = await self._http.get(endpoint, params=params)
         return self._handle_response(response)
 
     async def post(self, endpoint: str, data: dict = None) -> dict:
         """Make POST request to backend API"""
-        data = self._inject_branch(data or {})
-        response = await self._http.post(endpoint, json=data)
+        response = await self._http.post(
+            endpoint, json=data or {}, params=self._branch_query_params()
+        )
         return self._handle_response(response)
 
     async def patch(self, endpoint: str, data: dict = None) -> dict:
         """Make PATCH request to backend API"""
-        data = self._inject_branch(data or {})
-        response = await self._http.patch(endpoint, json=data)
+        response = await self._http.patch(
+            endpoint, json=data or {}, params=self._branch_query_params()
+        )
         return self._handle_response(response)
 
     async def delete(self, endpoint: str, data: dict = None) -> dict:
         """Make DELETE request to backend API"""
-        data = self._inject_branch(data or {})
-        response = await self._http.request("DELETE", endpoint, json=data)
+        response = await self._http.request(
+            "DELETE", endpoint, json=data or {}, params=self._branch_query_params()
+        )
         return self._handle_response(response)
 
     async def aclose(self):
