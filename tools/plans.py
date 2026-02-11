@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client, get_current_branch_id
+from .base import get_api_client
 
 
 @tool
@@ -97,11 +97,7 @@ async def create_plan(
             "features": features.split(",") if features else [],
         }
 
-        # Add branch ID if available
-        branch_id = get_current_branch_id()
-        url = f"/plans?branchId={branch_id}" if branch_id else "/plans"
-
-        response = await client.post(url, data)
+        response = await client.post("/plans", data)
 
         return {
             "success": True,

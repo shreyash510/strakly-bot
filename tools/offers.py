@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client, get_current_branch_id
+from .base import get_api_client
 
 
 @tool
@@ -120,11 +120,7 @@ async def create_offer(
             "isActive": True,
         }
 
-        # Add branch ID if available
-        branch_id = get_current_branch_id()
-        url = f"/offers?branchId={branch_id}" if branch_id else "/offers"
-
-        response = await client.post(url, data)
+        response = await client.post("/offers", data)
 
         return {
             "success": True,
