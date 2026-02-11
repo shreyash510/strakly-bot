@@ -139,7 +139,7 @@ Show each section as a separate card:
 
 <div class='profile-card'><div class='profile-header'><b>📋 Membership Sales</b><span class='status-badge active'>This Month</span></div><div class='profile-info'><div class='info-row'><span class='label'>Total Sales</span><span class='value'>[SALES COUNT]</span></div><div class='info-row'><span class='label'>Revenue</span><span class='value'>Rs. [REVENUE]</span></div><div class='info-row'><span class='label'>Top Plan</span><span class='value'>[TOP PLAN NAME]</span></div></div></div>
 
-<div class='profile-card'><div class='profile-header'><b>📅 Attendance</b><span class='status-badge active'>Today</span></div><div class='profile-info'><div class='info-row'><span class='label'>Present Today</span><span class='value'>[COUNT]</span></div></div></div>
+<div class='profile-card'><div class='profile-header'><b>📅 Attendance</b><span class='status-badge active'>Summary</span></div><div class='profile-info'><div class='info-row'><span class='label'>Present Today</span><span class='value'>[TODAY COUNT]</span></div><div class='info-row'><span class='label'>This Week</span><span class='value'>[WEEK COUNT]</span></div><div class='info-row'><span class='label'>This Month</span><span class='value'>[MONTH COUNT]</span></div><div class='info-row'><span class='label'>Total All-Time</span><span class='value'>[TOTAL COUNT]</span></div></div></div>
 
 <div class='profile-card'><div class='profile-header'><b>💼 Salary Status</b><span class='status-badge active'>Overview</span></div><div class='profile-info'><div class='info-row'><span class='label'>Pending Salaries</span><span class='value'>Rs. [PENDING]</span></div><div class='info-row'><span class='label'>Paid This Year</span><span class='value'>Rs. [PAID]</span></div></div></div>
 
@@ -188,6 +188,20 @@ Show each section as a separate card:
 - create_diet: Create a new diet plan (use ONLY after user confirms)
 - create_plan: Create a new membership plan (use ONLY after user confirms)
 - create_offer: Create a new discount offer (use ONLY after user confirms)
+
+- get_attendance_today: Get today's attendance records (who checked in today)
+- get_attendance_stats: Get attendance counts (today, this week, this month, total)
+- get_attendance_reports: Get detailed attendance analytics with trends and patterns (accepts optional start_date, end_date)
+- get_attendance_by_date: Get attendance records for a specific date (requires date in YYYY-MM-DD)
+- get_all_attendance: Get paginated attendance history (accepts optional start_date, end_date, page)
+- get_present_count: Get count of people currently present in the gym
+
+When user asks about attendance today or who checked in today, use get_attendance_today.
+When user asks "how many came this week/month" or "attendance this week", use get_attendance_stats.
+When user asks for attendance report, trends, or analytics, use get_attendance_reports.
+When user asks about attendance on a specific date, use get_attendance_by_date.
+When user asks for attendance history or all records, use get_all_attendance.
+When user asks who is in the gym right now or current occupancy, use get_present_count.
 
 When user asks "which clients" or "list them", ALWAYS call get_clients_list or similar tool first.
 When user asks about plans or pricing, use get_membership_plans.

@@ -6,7 +6,10 @@ from .clients import (
     bulk_update_clients, delete_client, bulk_delete_clients,
 )
 from .memberships import get_client_membership, get_membership_stats, get_active_membership_clients
-from .attendance import get_attendance_today, get_attendance_stats
+from .attendance import (
+    get_attendance_today, get_attendance_stats, get_attendance_reports,
+    get_attendance_by_date, get_all_attendance, get_present_count,
+)
 from .revenue import get_revenue_stats, get_membership_sales
 from .trainers import get_trainers_list, get_trainers_stats
 from .enquiries import get_enquiries_list, get_enquiries_stats, create_enquiry, bulk_create_enquiries
@@ -28,7 +31,8 @@ ALL_TOOLS = [
     # Memberships
     get_client_membership, get_membership_stats, get_active_membership_clients,
     # Attendance
-    get_attendance_today, get_attendance_stats,
+    get_attendance_today, get_attendance_stats, get_attendance_reports,
+    get_attendance_by_date, get_all_attendance, get_present_count,
     # Revenue
     get_revenue_stats, get_membership_sales,
     # Trainers
