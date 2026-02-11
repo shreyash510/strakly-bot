@@ -101,6 +101,18 @@ async def get_attendance_reports(start_date: str = None, end_date: str = None) -
 
         if isinstance(response, dict):
             summary = response.get("summary", {})
+
+            # Normalize dailyTrend dates to strings
+            daily_trend = []
+            for item in response.get("dailyTrend", []):
+                date_val = item.get("date", "")
+                # Handle date objects that may serialize as ISO strings
+                if hasattr(date_val, "isoformat"):
+                    date_val = date_val.isoformat()
+                elif isinstance(date_val, str) and "T" in date_val:
+                    date_val = date_val.split("T")[0]
+                daily_trend.append({"date": str(date_val), "count": item.get("count", 0)})
+
             return {
                 "summary": {
                     "totalCheckIns": summary.get("totalCheckIns", 0),
@@ -108,15 +120,15 @@ async def get_attendance_reports(start_date: str = None, end_date: str = None) -
                     "uniqueMembers": summary.get("uniqueMembers", 0),
                     "avgDuration": summary.get("avgDuration", 0),
                 },
-                "dailyTrend": response.get("dailyTrend", []),
+                "dailyTrend": daily_trend,
                 "weeklyPattern": response.get("weeklyPattern", []),
                 "genderDistribution": response.get("genderDistribution", {}),
                 "topMembers": response.get("topMembers", []),
             }
 
-        return response
+        return {"error": f"Unexpected response format: {type(response)}"}
     except Exception as e:
-        return {"error": str(e)}
+        return {"error": f"Failed to fetch attendance reports: {str(e)}"}
 
 
 @tool

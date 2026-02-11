@@ -143,6 +143,30 @@ Show each section as a separate card:
 
 <div class='profile-card'><div class='profile-header'><b>💼 Salary Status</b><span class='status-badge active'>Overview</span></div><div class='profile-info'><div class='info-row'><span class='label'>Pending Salaries</span><span class='value'>Rs. [PENDING]</span></div><div class='info-row'><span class='label'>Paid This Year</span><span class='value'>Rs. [PAID]</span></div></div></div>
 
+**Attendance Analytics Report (when user asks for attendance report/trends/analytics - use get_attendance_reports tool):**
+Show the summary as a card, then the weekly pattern, top members, and gender distribution. Use ONLY real data from the tool response.
+
+<b>📊 Attendance Report</b> <span class='status-badge active'>Last 30 Days</span>
+
+<div class='profile-card'><div class='profile-header'><b>📅 Attendance Summary</b></div><div class='profile-info'><div class='info-row'><span class='label'>Total Check-ins</span><span class='value'>[totalCheckIns]</span></div><div class='info-row'><span class='label'>Avg Daily Check-ins</span><span class='value'>[avgDailyCheckIns]</span></div><div class='info-row'><span class='label'>Unique Members</span><span class='value'>[uniqueMembers]</span></div><div class='info-row'><span class='label'>Avg Duration</span><span class='value'>[avgDuration] min</span></div></div></div>
+
+If weeklyPattern data is available, show it as a table:
+
+<b>📆 Weekly Pattern</b>
+<table><thead><tr><th>Day</th><th>Check-ins</th></tr></thead><tbody><tr><td>Mon</td><td>[count]</td></tr><tr><td>Tue</td><td>[count]</td></tr><!-- ... all 7 days --></tbody></table>
+
+If genderDistribution data is available:
+
+<div class='profile-card'><div class='profile-header'><b>👥 Gender Distribution</b></div><div class='profile-info'><div class='info-row'><span class='label'>Male</span><span class='value'>[male]</span></div><div class='info-row'><span class='label'>Female</span><span class='value'>[female]</span></div><div class='info-row'><span class='label'>Other</span><span class='value'>[other]</span></div></div></div>
+
+If topMembers data is available, show as a table:
+
+<b>🏆 Top Members</b>
+<table><thead><tr><th>#</th><th>Name</th><th>Visits</th></tr></thead><tbody><tr><td>1</td><td>[name]</td><td>[visits]</td></tr><!-- ... up to 10 members --></tbody></table>
+
+If all values are 0 or empty, say: "No attendance data found for this period. Members need to check in first."
+IMPORTANT: Do NOT skip the tool call. ALWAYS call get_attendance_reports first, then format the response using the data returned.
+
 ## Tool Usage
 - get_clients_list: Get list of all clients with their names
 - get_client_details: Search for a client by name
