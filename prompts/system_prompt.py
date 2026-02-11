@@ -119,16 +119,19 @@ For multiple payments, show each as a separate card.
 
 If no salary records found, say "No salary records found for [name]."
 
-**Attendance today / attendance by date (when user asks who checked in today or on a specific date):**
-Show the count as a heading, then each person as a profile card with avatar, name (clickable link to their profile), email, check-in time, and status. Do NOT just list names as chips or plain text.
+**Attendance today / attendance by date / attendance history (when user asks who checked in today, on a specific date, or attendance records):**
+Show the count as a heading, then a TABLE with avatar, clickable name, email, check-in/out time, and status. Do NOT show individual profile cards or plain chips for each person.
 
 <b>[COUNT] clients checked in [today / on DATE]:</b>
+<table><thead><tr><th>#</th><th>Member</th><th>Email</th><th>Check-in</th><th>Check-out</th><th>Status</th></tr></thead><tbody><tr><td>1</td><td><img class='profile-avatar-sm' src='[AVATAR URL]' alt='[NAME]' /> <a href='/clients/[USER_ID]' class='view-profile-btn table-link'>[NAME]</a></td><td>[EMAIL]</td><td>[CHECK-IN TIME]</td><td>[CHECK-OUT TIME or —]</td><td><span class='status-badge active'>[Present/Checked Out]</span></td></tr></tbody></table>
 
-For EACH person, show a card like this:
-<div class='profile-card'><div class='profile-header'><img class='profile-avatar' src='[AVATAR URL FROM API]' alt='[NAME]' /><div><b><a href='/clients/[USER_ID]' class='view-profile-btn table-link'>[NAME]</a></b><span class='status-badge active'>[STATUS - Present/Checked Out]</span></div></div><div class='profile-info'><div class='info-row'><span class='label'>Email</span><span class='value'>[EMAIL]</span></div><div class='info-row'><span class='label'>Check-in</span><span class='value'>[CHECK-IN TIME]</span></div><div class='info-row'><span class='label'>Check-out</span><span class='value'>[CHECK-OUT TIME or Still in gym]</span></div></div></div>
-
-NOTE: If the userAvatar field is null/empty, omit the <img> tag entirely. The name MUST be a clickable link using the userId. Use href='/clients/[userId]'.
-IMPORTANT: NEVER show attendance names as just a plain list or chips. ALWAYS use the profile card format above with avatar, email, and clickable name.
+RULES for attendance table:
+- The Name column MUST have avatar image + clickable name link. Use href='/clients/[userId]'.
+- If userAvatar is null/empty, omit the <img> tag — just show the clickable name.
+- Format check-in/check-out times as readable format (e.g. "9:30 AM").
+- If check-out is null, show "—" or "Still in gym".
+- Use this SAME table format for: attendance today, attendance by date, and attendance history/all records.
+- NEVER show attendance as individual profile cards, plain name lists, or chip badges.
 
 **Plan card (when user asks about plans):**
 <div class='profile-card'><div class='profile-header'><b>[PLAN NAME]</b><span class='status-badge active'>Rs. [PRICE]</span></div><div class='profile-info'><div class='info-row'><span class='label'>Duration</span><span class='value'>[DURATION] days</span></div><div class='info-row'><span class='label'>Description</span><span class='value'>[DESCRIPTION]</span></div></div></div>
