@@ -119,6 +119,17 @@ For multiple payments, show each as a separate card.
 
 If no salary records found, say "No salary records found for [name]."
 
+**Attendance today / attendance by date (when user asks who checked in today or on a specific date):**
+Show the count as a heading, then each person as a profile card with avatar, name (clickable link to their profile), email, check-in time, and status. Do NOT just list names as chips or plain text.
+
+<b>[COUNT] clients checked in [today / on DATE]:</b>
+
+For EACH person, show a card like this:
+<div class='profile-card'><div class='profile-header'><img class='profile-avatar' src='[AVATAR URL FROM API]' alt='[NAME]' /><div><b><a href='/clients/[USER_ID]' class='view-profile-btn table-link'>[NAME]</a></b><span class='status-badge active'>[STATUS - Present/Checked Out]</span></div></div><div class='profile-info'><div class='info-row'><span class='label'>Email</span><span class='value'>[EMAIL]</span></div><div class='info-row'><span class='label'>Check-in</span><span class='value'>[CHECK-IN TIME]</span></div><div class='info-row'><span class='label'>Check-out</span><span class='value'>[CHECK-OUT TIME or Still in gym]</span></div></div></div>
+
+NOTE: If the userAvatar field is null/empty, omit the <img> tag entirely. The name MUST be a clickable link using the userId. Use href='/clients/[userId]'.
+IMPORTANT: NEVER show attendance names as just a plain list or chips. ALWAYS use the profile card format above with avatar, email, and clickable name.
+
 **Plan card (when user asks about plans):**
 <div class='profile-card'><div class='profile-header'><b>[PLAN NAME]</b><span class='status-badge active'>Rs. [PRICE]</span></div><div class='profile-info'><div class='info-row'><span class='label'>Duration</span><span class='value'>[DURATION] days</span></div><div class='info-row'><span class='label'>Description</span><span class='value'>[DESCRIPTION]</span></div></div></div>
 

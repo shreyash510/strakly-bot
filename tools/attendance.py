@@ -29,7 +29,10 @@ async def get_attendance_today() -> dict:
             "records": [
                 {
                     "id": r.get("id"),
+                    "userId": r.get("userId"),
                     "userName": r.get("userName"),
+                    "userEmail": r.get("userEmail"),
+                    "userAvatar": r.get("userAvatar"),
                     "checkInTime": r.get("checkInTime"),
                     "checkOutTime": r.get("checkOutTime"),
                     "status": r.get("status"),
@@ -163,7 +166,10 @@ async def get_attendance_by_date(date: str) -> dict:
             "records": [
                 {
                     "id": r.get("id"),
+                    "userId": r.get("userId"),
                     "userName": r.get("userName"),
+                    "userEmail": r.get("userEmail"),
+                    "userAvatar": r.get("userAvatar"),
                     "checkInTime": r.get("checkInTime"),
                     "checkOutTime": r.get("checkOutTime"),
                     "status": r.get("status"),
@@ -209,7 +215,10 @@ async def get_all_attendance(start_date: str = None, end_date: str = None, page:
                 "records": [
                     {
                         "id": r.get("id"),
+                        "userId": r.get("userId"),
                         "userName": r.get("userName"),
+                        "userEmail": r.get("userEmail"),
+                        "userAvatar": r.get("userAvatar"),
                         "checkInTime": r.get("checkInTime"),
                         "checkOutTime": r.get("checkOutTime"),
                         "date": r.get("date"),
