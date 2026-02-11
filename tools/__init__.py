@@ -15,7 +15,7 @@ from .trainers import get_trainers_list, get_trainers_stats
 from .enquiries import get_enquiries_list, get_enquiries_stats, create_enquiry, bulk_create_enquiries
 from .gym import get_gym_info, get_branches_info, get_current_branch, create_branch
 from .staff import get_managers_list, get_staff_list, get_staff_details, get_branch_admins_list, create_staff
-from .salary import get_salary_by_name, get_staff_salary, get_salary_stats, get_pending_salaries, get_all_salaries
+from .salary import get_salary_by_name, get_staff_salary, get_salary_stats, get_pending_salaries, get_all_salaries, create_salary
 from .facilities import get_amenities_list, get_facilities_list, create_amenity, create_facility
 from .diets import get_diet_plans, get_diet_by_id, get_client_diet, create_diet
 from .plans import get_membership_plans, get_featured_plans, get_plan_details, create_plan
@@ -44,7 +44,7 @@ ALL_TOOLS = [
     # Staff
     get_managers_list, get_staff_list, get_staff_details, get_branch_admins_list, create_staff,
     # Salary
-    get_salary_by_name, get_staff_salary, get_salary_stats, get_pending_salaries, get_all_salaries,
+    get_salary_by_name, get_staff_salary, get_salary_stats, get_pending_salaries, get_all_salaries, create_salary,
     # Facilities & Amenities
     get_amenities_list, get_facilities_list, create_amenity, create_facility,
     # Diets
