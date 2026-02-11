@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client, extract_list
+from .base import get_api_client, extract_list, get_current_branch_id
 
 
 @tool
@@ -124,6 +124,71 @@ async def get_pending_salaries() -> dict:
         return response
     except Exception as e:
         return {"error": str(e)}
+
+
+@tool
+async def create_salary(
+    staff_id: int,
+    month: int,
+    year: int,
+    base_salary: float,
+    bonus: float = 0,
+    deductions: float = 0,
+    notes: str = None,
+    is_recurring: bool = False,
+) -> dict:
+    """Create a new salary record for a staff member.
+
+    IMPORTANT: Only call this tool AFTER showing confirmation to the user and getting their approval.
+
+    Args:
+        staff_id: The user ID of the staff member (required)
+        month: Month number 1-12 (required)
+        year: Year e.g. 2026 (required)
+        base_salary: Base salary amount in INR (required)
+        bonus: Bonus amount in INR (optional, default 0)
+        deductions: Deductions amount in INR (optional, default 0)
+        notes: Any notes for the salary record (optional)
+        is_recurring: Whether to auto-generate next month (optional, default False)
+
+    Returns:
+        Success response with created salary details, or error message
+    """
+    client = get_api_client()
+    try:
+        data = {
+            "staffId": staff_id,
+            "month": month,
+            "year": year,
+            "baseSalary": base_salary,
+            "bonus": bonus,
+            "deductions": deductions,
+            "isRecurring": is_recurring,
+        }
+        if notes:
+            data["notes"] = notes
+
+        response = await client.post("/salary", data)
+
+        net_amount = base_salary + bonus - deductions
+        return {
+            "success": True,
+            "message": f"Salary record created successfully for month {month}/{year}",
+            "salary": {
+                "id": response.get("id"),
+                "staffId": staff_id,
+                "month": month,
+                "year": year,
+                "baseSalary": base_salary,
+                "bonus": bonus,
+                "deductions": deductions,
+                "netAmount": net_amount,
+                "isRecurring": is_recurring,
+                "paymentStatus": "pending",
+            },
+        }
+    except Exception as e:
+        return {"error": str(e), "success": False}
 
 
 @tool
