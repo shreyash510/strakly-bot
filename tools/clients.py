@@ -224,8 +224,11 @@ async def create_client(
         if city:
             data["city"] = city
 
-        # Create the user via POST /users
-        # Note: branchId is auto-injected by APIClient.post()
+        # Add branch ID if available from context
+        branch_id = get_current_branch_id()
+        if branch_id:
+            data["branchId"] = branch_id
+
         response = await client.post("/users", data)
 
         return {
