@@ -87,9 +87,10 @@ async def _setup_chat(
     return conversation_id, conv_messages, messages, llm
 
 
-async def _execute_tool_calls(tool_calls: list, messages: list, conversation: list) -> list[str]:
-    """Execute tool calls and append results to messages. Returns tool names used."""
+async def _execute_tool_calls(tool_calls: list, messages: list, conversation: list) -> tuple[list[str], list[dict]]:
+    """Execute tool calls and append results to messages. Returns (tool_names, frontend_actions)."""
     tools_used = []
+    actions = []
     for tool_call in tool_calls:
         tool_name = tool_call["name"]
         tool_args = tool_call["args"]
@@ -98,6 +99,11 @@ async def _execute_tool_calls(tool_calls: list, messages: list, conversation: li
         if tool_name in TOOL_MAP:
             try:
                 result = await TOOL_MAP[tool_name].ainvoke(tool_args)
+
+                # Collect frontend actions (e.g. theme changes)
+                if isinstance(result, dict) and result.get("actions"):
+                    actions.extend(result["actions"])
+
                 tool_result = str(result)
             except Exception as e:
                 logger.error("Tool %s failed: %s", tool_name, e)
@@ -112,7 +118,7 @@ async def _execute_tool_calls(tool_calls: list, messages: list, conversation: li
         messages.append(tool_message)
         conversation.append(tool_message)
 
-    return tools_used
+    return tools_used, actions
 
 
 def _trim_conversation(conversation_id: str):
@@ -178,6 +184,7 @@ async def process_chat(
     )
 
     tools_used = []
+    all_actions = []
     max_iterations = 10
 
     try:
@@ -189,8 +196,9 @@ async def process_chat(
             if not response.tool_calls:
                 break
 
-            names = await _execute_tool_calls(response.tool_calls, messages, conversation)
+            names, new_actions = await _execute_tool_calls(response.tool_calls, messages, conversation)
             tools_used.extend(names)
+            all_actions.extend(new_actions)
 
         final_response = response.content if response.content else "I couldn't process that request. Please try again."
         _trim_conversation(conversation_id)
@@ -207,6 +215,7 @@ async def process_chat(
         "conversation_id": conversation_id,
         "tools_used": list(set(tools_used)),
         "suggested_questions": suggested_questions,
+        "actions": all_actions,
     }
 
 
@@ -230,6 +239,7 @@ async def process_chat_stream(
     yield f"data: {json.dumps({'conversation_id': conversation_id})}\n\n"
 
     tools_used = []
+    all_actions = []
     max_iterations = 10
     full_response = None
 
@@ -267,8 +277,9 @@ async def process_chat_stream(
 
             # If tool calls, execute them and continue the loop
             if full_response.tool_calls:
-                names = await _execute_tool_calls(full_response.tool_calls, messages, conversation)
+                names, new_actions = await _execute_tool_calls(full_response.tool_calls, messages, conversation)
                 tools_used.extend(names)
+                all_actions.extend(new_actions)
                 # Notify frontend that tools are being processed
                 yield f"data: {json.dumps({'tools_used': names})}\n\n"
             else:
@@ -280,6 +291,10 @@ async def process_chat_stream(
         await cleanup_api_client()
 
     logger.info("Chat streamed: conversation=%s, tools=%s", conversation_id, tools_used)
+
+    # Send frontend actions (e.g. theme changes)
+    for action in all_actions:
+        yield f"data: {json.dumps({'action': action})}\n\n"
 
     # Generate and send suggested follow-up questions
     final_text = full_response.content if full_response and full_response.content else ""
