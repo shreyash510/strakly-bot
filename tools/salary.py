@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client, extract_list, get_current_branch_id
+from .base import get_api_client, extract_list
 
 
 @tool

@@ -99,8 +99,11 @@ async def cleanup_api_client():
         _current_client.set(None)
 
 
-def set_api_client(token: str, branch_id: int = None):
-    """Set the API client for current request context."""
+async def set_api_client(token: str, branch_id: int = None):
+    """Set the API client for current request context, closing any previous one."""
+    old = _current_client.get()
+    if old:
+        await old.aclose()
     _current_client.set(APIClient(token, branch_id))
 
 

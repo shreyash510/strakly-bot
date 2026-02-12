@@ -47,7 +47,13 @@ async def get_enquiries_stats() -> dict:
     try:
         # Dashboard includes enquiry stats
         response = await client.get("/dashboard/admin")
-        return response
+        # Extract only enquiry/lead-relevant fields to avoid returning the entire dashboard
+        enquiry_keys = [k for k in response if any(term in k.lower() for term in ("enquir", "lead", "onboarding", "pending", "inquiry"))]
+        stats = {k: response[k] for k in enquiry_keys if k in response}
+        if not stats:
+            # Fallback: return full response if no enquiry-specific keys found
+            return response
+        return stats
     except Exception as e:
         return {"error": str(e)}
 
