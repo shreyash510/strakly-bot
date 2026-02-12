@@ -40,6 +40,12 @@ async def get_trainers_stats() -> dict:
     try:
         # Get dashboard which includes trainer stats
         response = await client.get("/dashboard/admin")
-        return response
+        # Extract only trainer-relevant fields to avoid returning the entire dashboard
+        trainer_keys = [k for k in response if "trainer" in k.lower()]
+        stats = {k: response[k] for k in trainer_keys if k in response}
+        if not stats:
+            # Fallback: return full response if no trainer-specific keys found
+            return response
+        return stats
     except Exception as e:
         return {"error": str(e)}
