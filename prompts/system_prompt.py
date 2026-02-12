@@ -343,6 +343,7 @@ If all values are 0, say: "No attendance data found for this period."
 - get_all_attendance: Paginated attendance history
 - get_present_count: People currently in the gym
 - change_theme: Change the app's visual theme (dark/light mode) or accent color
+- navigate_to_page: Navigate user to a page (use when user says "go to", "open", "take me to")
 
 When user asks about attendance today → use get_attendance_today.
 When user asks "how many came this week/month" → use get_attendance_stats.
@@ -354,6 +355,7 @@ When user asks about plans/pricing → use get_membership_plans.
 When user asks about offers/discounts → use get_offers_list or get_active_offers.
 When user asks about salary of a person → use get_salary_by_name.
 When user asks to change theme/mode/color → use change_theme.
+When user asks to go to/open/navigate to a page → use navigate_to_page.
 
 ## Theme / Appearance
 
@@ -366,6 +368,62 @@ Users can ask you to change the app's appearance:
   → Call change_theme with both theme_mode and accent_color
 
 After changing, confirm what was changed: "Done! Switched to **dark mode** with **blue** accent."
+
+## Navigation
+
+When user asks to go to a page, open a page, or navigate somewhere → use navigate_to_page.
+
+**Simple pages** (no ID needed):
+- "go to dashboard" → navigate_to_page(path="/dashboard")
+- "open clients page" → navigate_to_page(path="/clients")
+- "show trainers" → navigate_to_page(path="/trainers")
+- "go to settings" → navigate_to_page(path="/settings")
+- "open attendance" → navigate_to_page(path="/attendance")
+- "go to memberships" → navigate_to_page(path="/memberships")
+- "open reports" → navigate_to_page(path="/financial-reports")
+- "go to salary" → navigate_to_page(path="/salary")
+- "open branches" → navigate_to_page(path="/branches")
+- "go to facilities" → navigate_to_page(path="/facilities")
+- "open amenities" → navigate_to_page(path="/amenities")
+- "go to plans" → navigate_to_page(path="/plans")
+- "open offers" → navigate_to_page(path="/offers")
+- "go to announcements" → navigate_to_page(path="/announcements")
+- "open diet plans" → navigate_to_page(path="/diet")
+- "go to support" → navigate_to_page(path="/support")
+- "go to profile" → navigate_to_page(path="/profile")
+- "open gym profile" → navigate_to_page(path="/gym-profile")
+- "go to health fitness" → navigate_to_page(path="/health-fitness")
+- "open my subscription" → navigate_to_page(path="/my-subscription")
+- "go to my attendance" → navigate_to_page(path="/my-attendance")
+- "go to share app" → navigate_to_page(path="/share-app")
+- "open data migration" → navigate_to_page(path="/data-migration")
+
+**Profile/detail pages** (need to find ID first):
+- "open Andrei's profile" → first call get_clients_list to find ID, then navigate_to_page(path="/clients/{id}")
+- "show trainer John" → first find trainer ID, then navigate_to_page(path="/trainers/{id}")
+- "open manager details" → find manager ID, then navigate_to_page(path="/managers/{id}")
+
+**Tab navigation** (append ?tab= query param to path):
+- "go to Andrei's attendance" → find ID, then navigate_to_page(path="/clients/{id}?tab=attendance")
+- "show client subscription tab" → navigate_to_page(path="/clients/{id}?tab=subscription")
+- "go to salary details tab" → navigate_to_page(path="/salary?tab=salary")
+- "show health insights" → navigate_to_page(path="/health-fitness?tab=insights")
+
+All available tabs per page:
+- /clients/:id → information, attendance, trainer, body-metrics, subscription, diet, permissions
+- /trainers/:id → information, clients
+- /managers/:id → information, permissions
+- /gym/:id → information, owner, subscription, branches
+- /users/:id → information, gym
+- /membership-plan/member/:id → membership, payments
+- /salary → overview, salary
+- /memberships → overview, clients
+- /membership-plan → overview, clients, plans, offers
+- /health-fitness → information, insights, history
+
+**Important:** When navigating to a person's profile, ALWAYS find their ID first using the appropriate search tool. Never guess IDs.
+
+After navigating, confirm: "Done! Taking you to **[page name]**."
 
 ## Creating Enquiries via Conversation
 

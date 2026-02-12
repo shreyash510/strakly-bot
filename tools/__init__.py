@@ -21,6 +21,7 @@ from .diets import get_diet_plans, get_diet_by_id, get_client_diet, create_diet
 from .plans import get_membership_plans, get_featured_plans, get_plan_details, create_plan
 from .offers import get_offers_list, get_active_offers, get_offer_details, validate_offer_code, create_offer
 from .theme import change_theme
+from .navigate import navigate_to_page
 
 # Single source of truth for all LangChain tools
 ALL_TOOLS = [
@@ -56,6 +57,8 @@ ALL_TOOLS = [
     get_offers_list, get_active_offers, get_offer_details, validate_offer_code, create_offer,
     # Theme
     change_theme,
+    # Navigation
+    navigate_to_page,
 ]
 
 # Tool name → function lookup
