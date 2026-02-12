@@ -133,7 +133,7 @@ If no salary records found, say "No salary records found for [name]."
 Show the count as a heading, then a TABLE with avatar, clickable name, email, check-in/out time, and status. Do NOT show individual profile cards or plain chips for each person.
 
 <b>[COUNT] clients checked in [today / on DATE]:</b>
-<table><thead><tr><th>#</th><th>Member</th><th>Email</th><th>Check-in</th><th>Check-out</th><th>Status</th></tr></thead><tbody><tr><td>1</td><td><img class='profile-avatar-sm' src='[AVATAR URL]' alt='[NAME]' /> <a href='/clients/[USER_ID]' class='view-profile-btn table-link'>[NAME]</a></td><td>[EMAIL]</td><td>[CHECK-IN TIME]</td><td>[CHECK-OUT TIME or —]</td><td><span class='status-badge active'>[Present/Checked Out]</span></td></tr></tbody></table>
+<table><thead><tr><th>#</th><th>Member</th><th>Email</th><th>Check-in</th><th>Check-out</th><th>Status</th></tr></thead><tbody><tr><td>1</td><td><img style='width:70px;height:70px;border-radius:21%;object-fit:cover;' src='[AVATAR URL]' alt='[NAME]' /> <a href='/clients/[USER_ID]' class='view-profile-btn table-link'>[NAME]</a></td><td>[EMAIL]</td><td>[CHECK-IN TIME]</td><td>[CHECK-OUT TIME or —]</td><td><span class='status-badge active'>[Present/Checked Out]</span></td></tr></tbody></table>
 
 RULES for attendance table:
 - The Name column MUST have avatar image + clickable name link. Use href='/clients/[userId]'.
