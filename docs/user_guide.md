@@ -477,6 +477,77 @@ If you're switching from another gym software, you can import your existing data
 
 ---
 
+### How to Use the AI Chatbot
+
+The AI Chatbot is your smart assistant built into Strakly. It understands gym management context and can answer questions, help you navigate, and provide guidance.
+
+**How to access:**
+1. Click the **chat icon** (💬) at the bottom-right corner of any page
+2. The chat window will open
+3. Type your question or command and press Enter or click Send
+
+**What you can ask:**
+- "How do I add a new client?"
+- "Show me today's attendance"
+- "Navigate to the plans page"
+- "How to create a membership plan?"
+- "What offers are currently active?"
+- "Help me with diet plans"
+- General questions about using Strakly features
+
+**Chat features:**
+- **Streaming responses** — answers appear in real-time as the AI types
+- **Conversation memory** — the chatbot remembers the current conversation context
+- **Action execution** — the chatbot can navigate you to pages, change themes, and change accent colors
+- **Markdown support** — responses are formatted with headings, lists, and code blocks
+- **New conversation** — click the refresh icon to start a fresh conversation
+
+---
+
+### How to Use the AI Voice Assistant
+
+The Voice Assistant lets you control Strakly hands-free using voice commands. Just say the wake word and speak your command.
+
+**How to activate:**
+1. Click the **microphone icon** (🎤) at the bottom-right corner
+2. Allow microphone permission when prompted by your browser
+3. The assistant will show **"Say 'Hey Strakly'... Waiting for wake word.."**
+4. Say **"Hey Strakly"** (or "Hi Strakly", "Hello Strakly") followed by your command
+
+**Wake words (any of these work):**
+- "Hey Strakly"
+- "Hi Strakly"
+- "Hello Strakly"
+- "Hey Assistant"
+- Just "Strakly"
+
+**Voice states:**
+- **Idle** (pulsing ring) — Listening for wake word
+- **Listening** (expanding rings) — Wake word detected, waiting for your command
+- **Processing** (spinning) — Sending your command to the AI
+- **Speaking** (pulsing) — AI is reading the response aloud
+
+**Example voice commands:**
+- "Hey Strakly, how do I add a new member?"
+- "Hi Strakly, navigate to the clients page"
+- "Hey Strakly, change theme to dark"
+- "Hello Strakly, what are today's stats?"
+
+**Tips:**
+- Speak clearly in a normal voice
+- Wait for the "listening" state before saying your command
+- The assistant will automatically stop listening after a few seconds of silence
+- Click the mic icon again to turn off the voice assistant
+- Works best in **Google Chrome** (uses Web Speech API)
+
+**Troubleshooting:**
+- **No response to wake word**: Make sure the mic icon is active (showing idle state). Check browser microphone permissions.
+- **"Microphone permission denied" error**: Go to browser settings > Site Settings > Microphone and allow access for Strakly.
+- **Assistant not hearing you**: Speak closer to the microphone. Reduce background noise.
+- **Browser not supported**: Voice assistant requires Chrome or Edge (Chromium-based browsers with Web Speech API support).
+
+---
+
 ## Tips & Best Practices
 
 1. **Branch Selection**: Use the branch selector in the navbar to filter data by specific branch
