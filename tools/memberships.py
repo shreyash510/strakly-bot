@@ -119,3 +119,93 @@ async def get_active_membership_clients() -> dict:
         }
     except Exception as e:
         return {"error": str(e)}
+
+
+@tool
+async def freeze_membership(membership_id: int, start_date: str, end_date: str, reason: str = None) -> dict:
+    """Freeze/hold a membership for a specified period.
+
+    IMPORTANT: Only call this tool AFTER showing confirmation to the user and getting their approval.
+
+    Args:
+        membership_id: The membership ID (required)
+        start_date: Freeze start date in YYYY-MM-DD format (required)
+        end_date: Freeze end date in YYYY-MM-DD format (required)
+        reason: Reason for freezing (optional)
+    """
+    client = get_api_client()
+    try:
+        data = {
+            "startDate": start_date,
+            "endDate": end_date,
+        }
+        if reason:
+            data["reason"] = reason
+
+        response = await client.post(f"/memberships/{membership_id}/freeze", data)
+        return {
+            "success": True,
+            "message": f"Membership frozen from {start_date} to {end_date}",
+            "freeze": response,
+        }
+    except Exception as e:
+        return {"error": str(e), "success": False}
+
+
+@tool
+async def unfreeze_membership(membership_id: int) -> dict:
+    """Unfreeze/resume a currently frozen membership.
+
+    IMPORTANT: Only call this tool AFTER showing confirmation to the user and getting their approval.
+
+    Args:
+        membership_id: The membership ID (required)
+    """
+    client = get_api_client()
+    try:
+        response = await client.post(f"/memberships/{membership_id}/unfreeze", {})
+        return {
+            "success": True,
+            "message": "Membership unfrozen successfully",
+            "result": response,
+        }
+    except Exception as e:
+        return {"error": str(e), "success": False}
+
+
+@tool
+async def get_freeze_history(membership_id: int) -> dict:
+    """Get freeze/hold history for a membership.
+
+    Args:
+        membership_id: The membership ID (required)
+
+    Use this tool when user asks about:
+    - Membership freeze history
+    - How many times was membership frozen
+    - Freeze records
+    """
+    client = get_api_client()
+    try:
+        response = await client.get(f"/memberships/{membership_id}/freezes")
+        freezes = extract_list(response)
+
+        if not freezes:
+            return {"count": 0, "freezes": [], "message": "No freeze history for this membership."}
+
+        return {
+            "count": len(freezes),
+            "freezes": [
+                {
+                    "id": f.get("id"),
+                    "startDate": f.get("startDate"),
+                    "endDate": f.get("endDate"),
+                    "reason": f.get("reason"),
+                    "status": f.get("status"),
+                    "createdAt": f.get("createdAt"),
+                }
+                for f in freezes
+            ],
+        }
+    except Exception as e:
+        return {"error": str(e)}
