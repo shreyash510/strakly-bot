@@ -41,7 +41,7 @@ def _evict_stale_conversations():
         logger.info("Evicted %d stale conversations", len(stale))
 
 
-def _setup_chat(
+async def _setup_chat(
     message: str,
     token: str,
     tenant: TenantContext,
@@ -52,7 +52,7 @@ def _setup_chat(
     _evict_stale_conversations()
 
     effective_branch_id = branch_id if branch_id is not None else tenant.branch_id
-    set_api_client(token, effective_branch_id)
+    await set_api_client(token, effective_branch_id)
 
     if not conversation_id:
         conversation_id = str(uuid.uuid4())
@@ -63,8 +63,14 @@ def _setup_chat(
     conv_messages, _ = conversations[conversation_id]
     conversations[conversation_id] = (conv_messages, time.time())
 
+    # Take the last 20 messages but don't start with a ToolMessage
+    # (it would be orphaned from its AIMessage with tool_calls)
+    recent = conv_messages[-20:]
+    while recent and isinstance(recent[0], ToolMessage):
+        recent.pop(0)
+
     messages = [SystemMessage(content=SYSTEM_PROMPT)]
-    for msg in conv_messages[-20:]:
+    for msg in recent:
         messages.append(msg)
 
     user_message = HumanMessage(content=message)
@@ -81,9 +87,10 @@ def _setup_chat(
     return conversation_id, conv_messages, messages, llm
 
 
-async def _execute_tool_calls(tool_calls: list, messages: list, conversation: list) -> list[str]:
-    """Execute tool calls and append results to messages. Returns tool names used."""
+async def _execute_tool_calls(tool_calls: list, messages: list, conversation: list) -> tuple[list[str], list[dict]]:
+    """Execute tool calls and append results to messages. Returns (tool_names, frontend_actions)."""
     tools_used = []
+    actions = []
     for tool_call in tool_calls:
         tool_name = tool_call["name"]
         tool_args = tool_call["args"]
@@ -92,6 +99,11 @@ async def _execute_tool_calls(tool_calls: list, messages: list, conversation: li
         if tool_name in TOOL_MAP:
             try:
                 result = await TOOL_MAP[tool_name].ainvoke(tool_args)
+
+                # Collect frontend actions (e.g. theme changes)
+                if isinstance(result, dict) and result.get("actions"):
+                    actions.extend(result["actions"])
+
                 tool_result = str(result)
             except Exception as e:
                 logger.error("Tool %s failed: %s", tool_name, e)
@@ -106,14 +118,18 @@ async def _execute_tool_calls(tool_calls: list, messages: list, conversation: li
         messages.append(tool_message)
         conversation.append(tool_message)
 
-    return tools_used
+    return tools_used, actions
 
 
 def _trim_conversation(conversation_id: str):
-    """Limit conversation history size."""
+    """Limit conversation history size without splitting tool_call/ToolMessage pairs."""
     entry = conversations.get(conversation_id)
     if entry and len(entry[0]) > 40:
-        conversations[conversation_id] = (entry[0][-40:], entry[1])
+        msgs = entry[0][-40:]
+        # Don't start with a ToolMessage — it would be orphaned from its AIMessage
+        while msgs and isinstance(msgs[0], ToolMessage):
+            msgs.pop(0)
+        conversations[conversation_id] = (msgs, entry[1])
 
 
 def _strip_html(text: str) -> str:
@@ -163,27 +179,31 @@ async def process_chat(
     branch_id: int = None,
 ) -> dict:
     """Process a chat message and return full response (non-streaming)."""
-    conversation_id, conversation, messages, llm = _setup_chat(
+    conversation_id, conversation, messages, llm = await _setup_chat(
         message, token, tenant, conversation_id, branch_id
     )
 
     tools_used = []
+    all_actions = []
     max_iterations = 10
 
-    for _ in range(max_iterations):
-        response = await llm.ainvoke(messages)
-        messages.append(response)
-        conversation.append(response)
+    try:
+        for _ in range(max_iterations):
+            response = await llm.ainvoke(messages)
+            messages.append(response)
+            conversation.append(response)
 
-        if not response.tool_calls:
-            break
+            if not response.tool_calls:
+                break
 
-        names = await _execute_tool_calls(response.tool_calls, messages, conversation)
-        tools_used.extend(names)
+            names, new_actions = await _execute_tool_calls(response.tool_calls, messages, conversation)
+            tools_used.extend(names)
+            all_actions.extend(new_actions)
 
-    final_response = response.content if response.content else "I couldn't process that request. Please try again."
-    _trim_conversation(conversation_id)
-    await cleanup_api_client()
+        final_response = response.content if response.content else "I couldn't process that request. Please try again."
+        _trim_conversation(conversation_id)
+    finally:
+        await cleanup_api_client()
 
     suggested_questions = await _generate_suggestions(message, final_response)
 
@@ -195,6 +215,7 @@ async def process_chat(
         "conversation_id": conversation_id,
         "tools_used": list(set(tools_used)),
         "suggested_questions": suggested_questions,
+        "actions": all_actions,
     }
 
 
@@ -210,7 +231,7 @@ async def process_chat_stream(
     Tool-calling iterations use ainvoke (non-streaming).
     The final text response uses astream for real token-by-token streaming.
     """
-    conversation_id, conversation, messages, llm = _setup_chat(
+    conversation_id, conversation, messages, llm = await _setup_chat(
         message, token, tenant, conversation_id, branch_id
     )
 
@@ -218,52 +239,62 @@ async def process_chat_stream(
     yield f"data: {json.dumps({'conversation_id': conversation_id})}\n\n"
 
     tools_used = []
+    all_actions = []
     max_iterations = 10
+    full_response = None
 
-    for _ in range(max_iterations):
-        # Try streaming — collect chunks to detect tool calls vs content
-        full_response = None
-        has_content = False
-        has_tool_calls = False
+    try:
+        for _ in range(max_iterations):
+            # Try streaming — collect chunks to detect tool calls vs content
+            full_response = None
+            has_content = False
+            has_tool_calls = False
 
-        async for chunk in llm.astream(messages):
-            # Accumulate chunks into full response
+            async for chunk in llm.astream(messages):
+                # Accumulate chunks into full response
+                if full_response is None:
+                    full_response = chunk
+                else:
+                    full_response = full_response + chunk
+
+                # Stream content tokens immediately (OpenAI never mixes content + tool_calls)
+                if chunk.content:
+                    has_content = True
+                    yield f"data: {json.dumps({'token': chunk.content})}\n\n"
+
+                if chunk.tool_call_chunks:
+                    has_tool_calls = True
+
             if full_response is None:
-                full_response = chunk
+                break
+
+            messages.append(full_response)
+            conversation.append(full_response)
+
+            # If this was a content-only response, we're done (tokens already streamed)
+            if has_content and not has_tool_calls:
+                break
+
+            # If tool calls, execute them and continue the loop
+            if full_response.tool_calls:
+                names, new_actions = await _execute_tool_calls(full_response.tool_calls, messages, conversation)
+                tools_used.extend(names)
+                all_actions.extend(new_actions)
+                # Notify frontend that tools are being processed
+                yield f"data: {json.dumps({'tools_used': names})}\n\n"
             else:
-                full_response = full_response + chunk
+                # No content and no tool calls — edge case, bail out
+                break
 
-            # Stream content tokens immediately (OpenAI never mixes content + tool_calls)
-            if chunk.content:
-                has_content = True
-                yield f"data: {json.dumps({'token': chunk.content})}\n\n"
+        _trim_conversation(conversation_id)
+    finally:
+        await cleanup_api_client()
 
-            if chunk.tool_call_chunks:
-                has_tool_calls = True
-
-        if full_response is None:
-            break
-
-        messages.append(full_response)
-        conversation.append(full_response)
-
-        # If this was a content-only response, we're done (tokens already streamed)
-        if has_content and not has_tool_calls:
-            break
-
-        # If tool calls, execute them and continue the loop
-        if full_response.tool_calls:
-            names = await _execute_tool_calls(full_response.tool_calls, messages, conversation)
-            tools_used.extend(names)
-            # Notify frontend that tools are being processed
-            yield f"data: {json.dumps({'tools_used': names})}\n\n"
-        else:
-            # No content and no tool calls — edge case, bail out
-            break
-
-    _trim_conversation(conversation_id)
-    await cleanup_api_client()
     logger.info("Chat streamed: conversation=%s, tools=%s", conversation_id, tools_used)
+
+    # Send frontend actions (e.g. theme changes)
+    for action in all_actions:
+        yield f"data: {json.dumps({'action': action})}\n\n"
 
     # Generate and send suggested follow-up questions
     final_text = full_response.content if full_response and full_response.content else ""

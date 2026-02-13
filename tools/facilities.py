@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from .base import get_api_client, get_current_branch_id
+from .base import get_api_client
 
 
 @tool
@@ -71,11 +71,7 @@ async def create_amenity(
         if description:
             data["description"] = description
 
-        # Add branch ID if available
-        branch_id = get_current_branch_id()
-        url = f"/amenities?branchId={branch_id}" if branch_id else "/amenities"
-
-        response = await client.post(url, data)
+        response = await client.post("/amenities", data)
 
         return {
             "success": True,
@@ -121,11 +117,7 @@ async def create_facility(
         if description:
             data["description"] = description
 
-        # Add branch ID if available
-        branch_id = get_current_branch_id()
-        url = f"/facilities?branchId={branch_id}" if branch_id else "/facilities"
-
-        response = await client.post(url, data)
+        response = await client.post("/facilities", data)
 
         return {
             "success": True,
