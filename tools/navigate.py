@@ -25,7 +25,7 @@ async def navigate_to_page(path: str) -> dict:
     - /salary
     - /diet, /diet/:id
     - /facilities, /amenities
-    - /financial-reports, /client-reports
+    - /financial-reports
     - /announcements, /announcements/:id
     - /settings, /profile
     - /gym-profile, /gym-subscription
