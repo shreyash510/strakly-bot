@@ -287,6 +287,9 @@ async def process_chat_stream(
                 break
 
         _trim_conversation(conversation_id)
+    except Exception as e:
+        logger.error("Stream error for conversation=%s: %s", conversation_id, e, exc_info=True)
+        yield f"data: {json.dumps({'error': str(e)})}\n\n"
     finally:
         await cleanup_api_client()
 
