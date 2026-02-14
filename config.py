@@ -34,7 +34,7 @@ class Config:
     # App
     APP_ENV: str = os.getenv("APP_ENV", "development")
     LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
-    PORT: int = int(os.getenv("BOT_PORT", "8001"))
+    PORT: int = int(os.getenv("BOT_PORT", "8000"))
 
     def validate(self):
         """Validate required secrets are set. Call at startup."""
