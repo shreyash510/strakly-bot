@@ -8,6 +8,11 @@ class ChatRequest(BaseModel):
     branch_id: Optional[int] = None
 
 
+class PublicChatRequest(BaseModel):
+    message: str
+    conversation_id: Optional[str] = None
+
+
 class ChatResponse(BaseModel):
     success: bool
     response: str

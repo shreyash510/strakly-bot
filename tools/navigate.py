@@ -35,12 +35,15 @@ async def navigate_to_page(path: str) -> dict:
     - /share-app
     - /health-fitness
     - /my-subscription, /my-attendance, /my-trainer, /my-salary
+    - /leads
+    - /referrals
+    - /documents
     - /data-migration
 
     Tab navigation (append ?tab=<tab_name> to the path):
 
     Client detail /clients/:id tabs:
-      information, attendance, trainer, body-metrics, subscription, diet, permissions
+      information, attendance, trainer, body-metrics, subscription, diet, permissions, notes, photos, goals, documents
 
     Trainer detail /trainers/:id tabs:
       information, clients

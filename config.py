@@ -20,9 +20,16 @@ class Config:
     # CORS
     CORS_ORIGINS: list[str] = [
         o.strip()
-        for o in os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
+        for o in os.getenv(
+            "CORS_ORIGINS",
+            "http://localhost:5173,http://localhost:3001",
+        ).split(",")
         if o.strip()
     ]
+
+    # Public bot rate limiting
+    PUBLIC_RATE_LIMIT: int = int(os.getenv("PUBLIC_RATE_LIMIT", "30"))
+    PUBLIC_RATE_WINDOW: int = int(os.getenv("PUBLIC_RATE_WINDOW", "600"))
 
     # App
     APP_ENV: str = os.getenv("APP_ENV", "development")
