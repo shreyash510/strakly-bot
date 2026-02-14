@@ -9,7 +9,8 @@ from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 
 from config import config
 from prompts import SYSTEM_PROMPT
-from tools import ALL_TOOLS, TOOL_MAP, set_api_client, cleanup_api_client
+from tools import TOOL_MAP, set_api_client, cleanup_api_client
+from tool_selector import select_tools
 from auth import TenantContext
 
 logger = logging.getLogger(__name__)
@@ -77,12 +78,13 @@ async def _setup_chat(
     messages.append(user_message)
     conv_messages.append(user_message)
 
+    selected_tools = select_tools(message, conv_messages)
     llm = ChatOpenAI(
         model=config.OPENAI_MODEL,
         temperature=0,
         api_key=config.OPENAI_API_KEY,
         request_timeout=60,
-    ).bind_tools(ALL_TOOLS)
+    ).bind_tools(selected_tools)
 
     return conversation_id, conv_messages, messages, llm
 
