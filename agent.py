@@ -64,9 +64,9 @@ async def _setup_chat(
     conv_messages, _ = conversations[conversation_id]
     conversations[conversation_id] = (conv_messages, time.time())
 
-    # Take the last 20 messages but don't start with a ToolMessage
+    # Take the last 12 messages but don't start with a ToolMessage
     # (it would be orphaned from its AIMessage with tool_calls)
-    recent = conv_messages[-20:]
+    recent = conv_messages[-12:]
     while recent and isinstance(recent[0], ToolMessage):
         recent.pop(0)
 
@@ -126,8 +126,8 @@ async def _execute_tool_calls(tool_calls: list, messages: list, conversation: li
 def _trim_conversation(conversation_id: str):
     """Limit conversation history size without splitting tool_call/ToolMessage pairs."""
     entry = conversations.get(conversation_id)
-    if entry and len(entry[0]) > 40:
-        msgs = entry[0][-40:]
+    if entry and len(entry[0]) > 24:
+        msgs = entry[0][-24:]
         # Don't start with a ToolMessage — it would be orphaned from its AIMessage
         while msgs and isinstance(msgs[0], ToolMessage):
             msgs.pop(0)
@@ -142,26 +142,17 @@ def _strip_html(text: str) -> str:
 
 async def _generate_suggestions(user_message: str, assistant_response: str) -> list[str]:
     """Generate 3 follow-up question suggestions based on the conversation."""
+    # Skip suggestions for very short responses (confirmations, errors, etc.)
+    if len(assistant_response) < 60:
+        return []
     try:
-        clean_response = _strip_html(assistant_response)[:800]
+        clean_response = _strip_html(assistant_response)[:400]
         prompt = (
-            "You are a gym management assistant. The user just had this conversation with you.\n\n"
-            f"USER: {user_message}\n"
-            f"ASSISTANT: {clean_response}\n\n"
-            "Based on EXACTLY what was discussed above, suggest 3 natural follow-up questions "
-            "the user would likely ask next. The questions must be:\n"
-            "- Directly related to the topic/data just discussed (NOT generic gym questions)\n"
-            "- Short (under 40 characters each)\n"
-            "- Actionable and specific\n\n"
-            "For example:\n"
-            "- If you showed client count → 'List all active clients', 'Expired memberships', 'New clients this month'\n"
-            "- If you showed revenue → 'Revenue last month', 'Pending payments', 'Top paying clients'\n"
-            "- If you showed attendance → 'Who came today?', 'Weekly attendance trend', 'Most active clients'\n"
-            "- If you showed a client profile → 'Update their phone', 'Renew membership', 'Payment history'\n\n"
-            "Return ONLY a JSON array of 3 strings. No explanation, no markdown, just the array."
+            f"USER: {user_message[:100]}\nASSISTANT: {clean_response}\n\n"
+            "Suggest 3 short follow-up questions (<40 chars) related to the above. "
+            "Return ONLY a JSON array of 3 strings."
         )
         result = await _suggestion_llm.ainvoke([HumanMessage(content=prompt)])
-        # Strip markdown code fences if present
         content = result.content.strip()
         if content.startswith("```"):
             content = content.split("\n", 1)[-1].rsplit("```", 1)[0].strip()

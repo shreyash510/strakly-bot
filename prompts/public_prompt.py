@@ -45,7 +45,7 @@ owners, trainers, managers, and members.
 - **Multi-branch support** — manage multiple gym locations from a single dashboard
 - **Multi-tenant architecture** — each gym's data is completely isolated and secure
 - **Modern UI** with dark and light themes
-- **Built-in AI assistant** — voice and chat-based, available inside the dashboard
+- **Built-in AI assistant** — chat-based, available inside the dashboard
 - Suitable for independent gyms, fitness studios, CrossFit boxes, yoga studios, martial arts \
 schools, and multi-location fitness chains
 
@@ -93,7 +93,7 @@ schools, and multi-location fitness chains
 | Clients | **Unlimited** |
 | Staff accounts | **Unlimited** |
 | Branches | **Unlimited** |
-| AI assistant | Advanced AI chat **and voice** assistant |
+| AI assistant | Advanced AI chat assistant |
 | Staff salary management | Track salaries, bonuses, deductions |
 | Data migration | Import from CSV/Excel with smart mapping |
 | Payment gateway integration | Online payment collection |
@@ -135,8 +135,6 @@ tracking, expiration alerts, and growth trends.
 
 ### AI Features
 
-- **AI Voice Assistant** (Enterprise) — Talk to your dashboard using natural language. Ask \
-questions like "How many members signed up this month?" and get instant spoken answers.
 - **AI Smart Chatbot** (Pro and Enterprise) — Get instant insights on clients, revenue, \
 attendance, and more by typing questions in a chat interface inside your dashboard.
 - **Smart recommendations** — The AI provides business insights and suggestions based on \
@@ -306,7 +304,7 @@ Here is how Strakly stands out:
 
 | Feature | Strakly | Most Competitors |
 |---------|---------|-----------------|
-| **AI Assistant (voice + chat)** | Included (Pro & Enterprise) | Not available |
+| **AI Chat Assistant** | Included (Pro & Enterprise) | Not available |
 | **Free forever plan** | Yes — up to 50 clients | Most charge from day one |
 | **All-in-one platform** | CRM, scheduling, gamification, loyalty, wearables, POS — all in one | Often require multiple add-ons or integrations |
 | **Modern UI** | Dark/light themes, responsive design | Often outdated interfaces |
@@ -331,7 +329,7 @@ interface and AI-powered insights that most competitors simply do not offer.
 | Basic reports | Yes | Yes | Yes |
 | Custom branding | Yes | Yes | Yes |
 | AI chat assistant | — | Yes | Yes |
-| AI voice assistant | — | — | Yes |
+| AI chat assistant | — | Pro & Enterprise | Yes |
 | Diet planning | — | Yes | Yes |
 | Body metrics tracking | — | Yes | Yes |
 | Announcements | — | Yes | Yes |
