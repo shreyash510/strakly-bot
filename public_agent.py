@@ -34,13 +34,13 @@ def _evict_stale():
 
 
 async def _generate_suggestions(user_message: str, assistant_response: str) -> list[str]:
+    if len(assistant_response) < 60:
+        return []
     try:
-        clean = assistant_response[:800]
+        clean = assistant_response[:400]
         prompt = (
-            "You are a gym management software assistant on a public website.\n\n"
-            f"USER: {user_message}\nASSISTANT: {clean}\n\n"
-            "Suggest 3 short follow-up questions (under 40 chars each) the visitor would likely ask next. "
-            "Questions should be about Strakly features, pricing, or setup. "
+            f"USER: {user_message[:100]}\nASSISTANT: {clean}\n\n"
+            "Suggest 3 short follow-up questions (<40 chars) about Strakly. "
             "Return ONLY a JSON array of 3 strings."
         )
         result = await _suggestion_llm.ainvoke([HumanMessage(content=prompt)])
@@ -67,7 +67,7 @@ async def process_public_chat(message: str, conversation_id: str = None) -> dict
     conv_messages, _ = public_conversations[conversation_id]
     public_conversations[conversation_id] = (conv_messages, time.time())
 
-    recent = conv_messages[-20:]
+    recent = conv_messages[-12:]
     messages = [SystemMessage(content=PUBLIC_SYSTEM_PROMPT)]
     messages.extend(recent)
 
@@ -86,8 +86,8 @@ async def process_public_chat(message: str, conversation_id: str = None) -> dict
     conv_messages.append(response)
 
     # Trim if too long
-    if len(conv_messages) > 40:
-        public_conversations[conversation_id] = (conv_messages[-40:], time.time())
+    if len(conv_messages) > 24:
+        public_conversations[conversation_id] = (conv_messages[-24:], time.time())
 
     final_response = response.content or "I'm sorry, I couldn't process that. Please try again."
     suggested = await _generate_suggestions(message, final_response)
@@ -112,7 +112,7 @@ async def process_public_chat_stream(message: str, conversation_id: str = None) 
     conv_messages, _ = public_conversations[conversation_id]
     public_conversations[conversation_id] = (conv_messages, time.time())
 
-    recent = conv_messages[-20:]
+    recent = conv_messages[-12:]
     messages = [SystemMessage(content=PUBLIC_SYSTEM_PROMPT)]
     messages.extend(recent)
 
@@ -141,8 +141,8 @@ async def process_public_chat_stream(message: str, conversation_id: str = None) 
     if full_response:
         conv_messages.append(full_response)
 
-    if len(conv_messages) > 40:
-        public_conversations[conversation_id] = (conv_messages[-40:], time.time())
+    if len(conv_messages) > 24:
+        public_conversations[conversation_id] = (conv_messages[-24:], time.time())
 
     final_text = full_response.content if full_response and full_response.content else ""
     suggested = await _generate_suggestions(message, final_text)
