@@ -1504,6 +1504,88 @@ A: Reports show in the gym's default currency. Use the currency converter for qu
 
 ---
 
+## My Apps & Sidebar Customization
+
+### My Apps Dashboard
+
+My Apps is your personalized app dashboard — similar to a phone home screen.
+
+**Normal Mode:**
+- Shows all your **pinned apps** as a grid of tiles
+- Tap any tile to navigate to that feature
+- Pinned apps also appear in the sidebar
+
+**Edit Mode:**
+- Click **Edit** to enter edit mode
+- Apps are grouped by section (Daily Operations, Management, Finance, etc.)
+- Use the **toggle switch** to enable/disable an app
+- Use the **pin icon** to pin/unpin an app to sidebar
+- Click **Save** to apply changes
+
+**How Pinning Works:**
+- **Enabled**: The app is available to you
+- **Pinned**: The app shows in your sidebar and My Apps grid
+- Disabling an app automatically unpins it
+- Pinning an app automatically enables it
+- Preferences are saved to your account and sync across devices
+
+### Sidebar Layout
+
+The sidebar shows your pinned apps and feature sections:
+
+1. **Always Visible** — Dashboard, My Apps
+2. **Hub Links** — Pinned section hubs (Daily Operations, Management, etc.)
+3. **Collapsible Sections** — Grouped pinned features with expandable headers
+4. **Account** (bottom) — Gym Management, Help & Docs, Support, AI Chat
+
+The **Daily Operations** section is expanded by default.
+
+### Section Hub Pages
+
+Each section has a **hub page** showing all features in that category as an app grid.
+
+**Available Hubs:**
+- **Daily Operations** (`/daily-operations`): Clients, attendance, classes, appointments, guest visits, diet, announcements
+- **Management** (`/management`): Staff, branch admins, managers, trainers, salary
+- **Resources** (`/resources`): Branches, facilities, amenities, equipment
+- **Growth** (`/growth`): Leads, referrals, campaigns, guest passes, engagement, gamification, loyalty, surveys, wearables
+- **Finance** (`/finance`): Plans, memberships, offers, products, financial reports
+- **Platform** (`/platform`): Users, gyms, SaaS subscriptions (Superadmin only)
+
+Each hub page has a **section dropdown** in the top-right to quickly switch between sections.
+
+---
+
+## Daily Sales Report
+
+The Daily Sales report shows a complete breakdown of one day's financial activity.
+
+### How to View Daily Sales
+
+1. Go to **Reports** from the sidebar
+2. Click the **Daily Sales** tab
+3. Select a date using the date picker
+
+### Summary Cards
+
+- **Memberships**: Revenue and count from membership sales
+- **Product Sales**: Revenue and count from product sales
+- **Total Revenue**: Combined income for the day
+- **Expenses**: Staff salary and other expenses
+- **Net Profit/Loss**: Revenue minus expenses
+
+### Payment Method Breakdown
+
+Shows totals by payment method: Cash, Card, Bank Transfer, Online.
+
+### Detailed Tables
+
+- **Membership Sales**: Client name, plan, amount, payment method, time — paginated (5 per page)
+- **Product Sales**: Product name, buyer, quantity, total, time — paginated (5 per page)
+- **Expenses**: Staff name, type, amount, time
+
+---
+
 ## Tips & Best Practices
 
 1. **Branch Selection**: Use the branch selector in the navbar to filter data by specific branch
