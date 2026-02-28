@@ -4,7 +4,7 @@ import time
 import uuid
 from typing import AsyncGenerator
 
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage
 
 from config import config
@@ -17,12 +17,12 @@ public_conversations: dict[str, tuple[list, float]] = {}
 _CONVERSATION_TTL = 30 * 60  # 30 minutes
 
 # Reusable LLM for suggestions
-_suggestion_llm = ChatOpenAI(
-    model=config.OPENAI_MODEL,
+_suggestion_llm = ChatGoogleGenerativeAI(
+    model=config.GEMINI_MODEL,
     temperature=0.7,
     max_tokens=300,
-    api_key=config.OPENAI_API_KEY,
-    request_timeout=15,
+    google_api_key=config.GOOGLE_API_KEY,
+    timeout=15,
 )
 
 
@@ -75,11 +75,11 @@ async def process_public_chat(message: str, conversation_id: str = None) -> dict
     messages.append(user_msg)
     conv_messages.append(user_msg)
 
-    llm = ChatOpenAI(
-        model=config.OPENAI_MODEL,
+    llm = ChatGoogleGenerativeAI(
+        model=config.GEMINI_MODEL,
         temperature=0.3,
-        api_key=config.OPENAI_API_KEY,
-        request_timeout=60,
+        google_api_key=config.GOOGLE_API_KEY,
+        timeout=60,
     )
 
     response = await llm.ainvoke(messages)
@@ -122,11 +122,11 @@ async def process_public_chat_stream(message: str, conversation_id: str = None) 
 
     yield f"data: {json.dumps({'conversation_id': conversation_id})}\n\n"
 
-    llm = ChatOpenAI(
-        model=config.OPENAI_MODEL,
+    llm = ChatGoogleGenerativeAI(
+        model=config.GEMINI_MODEL,
         temperature=0.3,
-        api_key=config.OPENAI_API_KEY,
-        request_timeout=60,
+        google_api_key=config.GOOGLE_API_KEY,
+        timeout=60,
     )
 
     full_response = None
