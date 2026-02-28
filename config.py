@@ -6,9 +6,9 @@ load_dotenv()
 
 
 class Config:
-    # OpenAI
-    OPENAI_API_KEY: str = os.getenv("OPENAI_API_KEY", "")
-    OPENAI_MODEL: str = os.getenv("OPENAI_MODEL", "gpt-4o")
+    # Google Gemini
+    GOOGLE_API_KEY: str = os.getenv("GOOGLE_API_KEY", "")
+    GEMINI_MODEL: str = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 
     # Backend API
     BACKEND_API_URL: str = os.getenv("BACKEND_API_URL", "http://localhost:3000/api")
@@ -39,8 +39,8 @@ class Config:
     def validate(self):
         """Validate required secrets are set. Call at startup."""
         missing = []
-        if not self.OPENAI_API_KEY:
-            missing.append("OPENAI_API_KEY")
+        if not self.GOOGLE_API_KEY:
+            missing.append("GOOGLE_API_KEY")
         if not self.JWT_SECRET:
             missing.append("JWT_SECRET")
         if missing:

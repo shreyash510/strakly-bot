@@ -4,7 +4,7 @@ import time
 import uuid
 from typing import AsyncGenerator
 
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import HumanMessage, SystemMessage, ToolMessage
 
 from config import config
@@ -23,12 +23,12 @@ conversations: dict[str, tuple[list, float]] = {}
 _CONVERSATION_TTL = 30 * 60
 
 # Reusable LLM client for suggestion generation
-_suggestion_llm = ChatOpenAI(
-    model=config.OPENAI_MODEL,
+_suggestion_llm = ChatGoogleGenerativeAI(
+    model=config.GEMINI_MODEL,
     temperature=0.7,
     max_tokens=300,
-    api_key=config.OPENAI_API_KEY,
-    request_timeout=15,
+    google_api_key=config.GOOGLE_API_KEY,
+    timeout=15,
 )
 
 
@@ -79,11 +79,11 @@ async def _setup_chat(
     conv_messages.append(user_message)
 
     selected_tools = select_tools(message, conv_messages)
-    llm = ChatOpenAI(
-        model=config.OPENAI_MODEL,
+    llm = ChatGoogleGenerativeAI(
+        model=config.GEMINI_MODEL,
         temperature=0,
-        api_key=config.OPENAI_API_KEY,
-        request_timeout=60,
+        google_api_key=config.GOOGLE_API_KEY,
+        timeout=60,
     ).bind_tools(selected_tools)
 
     return conversation_id, conv_messages, messages, llm
@@ -250,7 +250,7 @@ async def process_chat_stream(
                 else:
                     full_response = full_response + chunk
 
-                # Stream content tokens immediately (OpenAI never mixes content + tool_calls)
+                # Stream content tokens immediately
                 if chunk.content:
                     has_content = True
                     yield f"data: {json.dumps({'token': chunk.content})}\n\n"

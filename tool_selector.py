@@ -1,4 +1,4 @@
-"""Dynamic tool selection to stay within OpenAI's 128-tool limit.
+"""Dynamic tool selection to stay within the 128-tool limit.
 
 Categorises the 137 LangChain tools, matches user messages against
 keyword rules, and returns only the relevant subset (always ≤ 128).
