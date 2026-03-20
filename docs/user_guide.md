@@ -15,7 +15,7 @@ Strakly is a comprehensive gym management system that helps gym owners, managers
 
 ### Admin (Gym Owner)
 - Full control over their gym
-- Manages branches, staff, clients, and finances
+- Manages staff, clients, and finances
 - Creates membership plans and offers
 
 ### Manager
@@ -23,16 +23,12 @@ Strakly is a comprehensive gym management system that helps gym owners, managers
 - Can manage clients, trainers, and attendance
 - Limited access to financial data
 
-### Branch Admin
-- Manages a specific branch
-- Can manage clients and staff within their branch
-
 ### Trainer
 - Manages assigned clients
 - Creates diet and workout plans
 - Tracks client progress
 
-### Client (Member)
+### Client
 - Views their membership details
 - Checks attendance history
 - Views assigned trainer and diet plans
@@ -41,7 +37,7 @@ Strakly is a comprehensive gym management system that helps gym owners, managers
 
 ## Common Tasks
 
-### How to Create a Client/Member
+### How to Create a Client
 
 1. Go to **Clients** page from the sidebar menu
 2. Click the **"Add Client"** or **"+"** button at the top right
@@ -119,7 +115,6 @@ Offers can be applied when assigning memberships to clients.
    - **Phone** (required)
    - **Gender**
    - **Specialization** (e.g., Weight Training, Yoga, Cardio)
-   - **Branch** - assign to a specific branch
 4. Click **"Save"** to add the trainer
 
 The trainer will receive login credentials via email.
@@ -135,38 +130,7 @@ The trainer will receive login credentials via email.
    - **Email** (required)
    - **Phone** (required)
    - **Gender**
-   - **Branch** - assign to a specific branch
 4. Click **"Save"** to add the manager
-
----
-
-### How to Add a Branch Admin
-
-1. Go to **Branch Admins** page from the sidebar
-2. Click **"Add Branch Admin"** or **"+"** button
-3. Fill in details:
-   - **Name** (required)
-   - **Email** (required)
-   - **Phone** (required)
-   - **Branch** - assign to manage a specific branch
-4. Click **"Save"**
-
----
-
-### How to Create a Branch
-
-1. Go to **Branches** page from the sidebar
-2. Click **"Add Branch"** or **"+"** button
-3. Fill in branch details:
-   - **Branch Name** (required)
-   - **Branch Code** (unique identifier)
-   - **Phone**
-   - **Email**
-   - **Address**
-   - **City**
-   - **State**
-   - **Zip Code**
-4. Click **"Save"** to create the branch
 
 ---
 
@@ -174,14 +138,14 @@ The trainer will receive login credentials via email.
 
 **For Staff/Trainer:**
 1. Go to **Attendance** page
-2. Members can check-in using their **Attendance Code**
+2. Clients can check-in using their **Attendance Code**
 3. Enter the code in the attendance terminal
 4. Or use the QR code scanner
 
 **For Admin viewing attendance:**
 1. Go to **Attendance** page
 2. View today's attendance list
-3. Filter by date range, branch, or member
+3. Filter by date range or client
 4. Export attendance reports if needed
 
 ---
@@ -262,9 +226,9 @@ The trainer will receive login credentials via email.
 **Dashboard Reports:**
 1. Go to **Dashboard** page
 2. View summary cards:
-   - Total Members
-   - Active Members
-   - New Members This Month
+   - Total Clients
+   - Active Clients
+   - New Clients This Month
    - Revenue
    - Attendance Today
 
@@ -316,7 +280,7 @@ The Clients page has status-based tabs: **Enquiry**, **Confirmed**, **Active**, 
 2. View the **QR Code** for client registration
 3. Clients can scan this QR code to:
    - Download the mobile app
-   - Register as a new member
+   - Register as a new client
 4. Share the registration link via WhatsApp, Email, or SMS
 
 ---
@@ -352,24 +316,6 @@ The Clients page has status-based tabs: **Enquiry**, **Confirmed**, **Active**, 
    - **Message**
    - **Target Audience** (All, Clients, Staff)
 5. Click **"Publish"**
-
----
-
-### How to Transfer a Client to Another Branch
-
-**Single transfer:**
-1. Go to client's profile page
-2. Find the **"Transfer Branch"** section
-3. Select the destination branch
-4. Click **"Transfer"**
-5. The client will be moved to the new branch
-
-**Bulk transfer (move multiple clients at once):**
-1. Go to **Clients** page
-2. Select multiple clients using the checkboxes
-3. Click the **"Move to Branch"** icon button in the bulk action bar
-4. Select the destination branch from the dropdown
-5. Click **"Move"** to transfer all selected clients
 
 ---
 
@@ -428,11 +374,11 @@ The Clients page has status-based tabs: **Enquiry**, **Confirmed**, **Active**, 
 
 If you're switching from another gym software, you can import your existing data using the Data Migration feature.
 
-**Supported data types:** Members, Staff (Trainers/Managers), Memberships, Payments
+**Supported data types:** Clients, Staff (Trainers/Managers), Memberships, Payments
 
 **Step-by-step:**
 
-1. Go to **Data Migration** page from the sidebar (Admin and Branch Admin only)
+1. Go to **Data Migration** page from the sidebar (Admin only)
 2. Read the migration guide shown on the page
 3. **Select data type** — choose what you want to import (Members, Staff, Memberships, or Payments)
 4. **Download template** (optional) — click "Template" to get an Excel file with the correct format
@@ -458,9 +404,9 @@ If you're switching from another gym software, you can import your existing data
 18. View the import results (imported, skipped, errors)
 
 **Important notes:**
-- **Import order**: Import Members and Staff first, then Memberships and Payments (memberships need existing members, payments need existing members)
+- **Import order**: Import Clients and Staff first, then Memberships and Payments (memberships need existing clients, payments need existing clients)
 - **Duplicate emails are skipped** — existing data won't be overwritten
-- **Default password**: Imported members get password "Strakly@123" — they should change it on first login
+- **Default password**: Imported clients get password "Strakly@123" — they should change it on first login
 - **Supported formats**: CSV, Excel (.xlsx, .xls), max 10MB per file
 
 ---
@@ -528,7 +474,7 @@ The Voice Assistant lets you control Strakly hands-free using voice commands. Ju
 - **Speaking** (pulsing) — AI is reading the response aloud
 
 **Example voice commands:**
-- "Hey Strakly, how do I add a new member?"
+- "Hey Strakly, how do I add a new client?"
 - "Hi Strakly, navigate to the clients page"
 - "Hey Strakly, change theme to dark"
 - "Hello Strakly, what are today's stats?"
@@ -550,35 +496,35 @@ The Voice Assistant lets you control Strakly hands-free using voice commands. Ju
 
 ---
 
-## Enhanced Member Profiles
+## Enhanced Client Profiles
 
-Strakly stores rich member profiles with fields that the top gym management platforms use:
+Strakly stores rich client profiles with fields that the top gym management platforms use:
 
 | Field | Description |
 |-------|-------------|
-| **Lead Source** | How the member found the gym: walk-in, website, social media, referral, ad campaign, Google, Instagram |
-| **Occupation** | Member's job title |
+| **Lead Source** | How the client found the gym: walk-in, website, social media, referral, ad campaign, Google, Instagram |
+| **Occupation** | Client's job title |
 | **Blood Group** | A+, B-, O+, AB+, etc. |
 | **Medical Conditions** | Allergies, injuries, chronic conditions |
 | **Fitness Goal** | Primary goal: weight_loss, muscle_gain, general_fitness, sports, rehab, flexibility |
 | **Preferred Time Slot** | morning, afternoon, evening |
-| **Nationality** | Member's nationality |
+| **Nationality** | Client's nationality |
 | **ID Type** | Aadhaar, PAN, Passport, Driving License |
 | **ID Number** | ID proof number |
-| **Referred By** | Which existing member referred this person |
-| **Referral Code** | Member's unique referral code for sharing |
+| **Referred By** | Which existing client referred this person |
+| **Referral Code** | Client's unique referral code for sharing |
 
-These fields appear in the client profile form when creating or editing a member.
+These fields appear in the client profile form when creating or editing a client.
 
 ---
 
 ## Membership Freeze / Hold
 
-Members can temporarily freeze (pause) their membership when they need a break (travel, injury, etc.).
+Clients can temporarily freeze (pause) their membership when they need a break (travel, injury, etc.).
 
 ### How to Freeze a Membership
 
-1. Go to the member's profile > **Membership** tab
+1. Go to the client's profile > **Membership** tab
 2. Click **"Freeze Membership"**
 3. Set the **Freeze Start Date** and **Freeze End Date**
 4. Enter the **Reason** for the freeze (optional)
@@ -594,10 +540,10 @@ Members can temporarily freeze (pause) their membership when they need a break (
 
 ### Common Issues
 
-**Q: Can a member freeze multiple times?**
+**Q: Can a client freeze multiple times?**
 A: Yes, as long as the total freeze days don't exceed the plan's max freeze days limit.
 
-**Q: What happens if the member wants to unfreeze early?**
+**Q: What happens if the client wants to unfreeze early?**
 A: Go to their membership tab and click **"Unfreeze"** to end the freeze immediately. The remaining freeze days are returned.
 
 **Q: Does the membership end date extend?**
@@ -612,7 +558,7 @@ When a membership is cancelled, Strakly tracks the reason with structured catego
 | Reason Code | Description |
 |-------------|-------------|
 | cost | Too expensive |
-| relocation | Member is moving away |
+| relocation | Client is moving away |
 | injury | Injury or health issue |
 | dissatisfied | Unhappy with service or facilities |
 | schedule | Schedule conflicts |
@@ -620,15 +566,15 @@ When a membership is cancelled, Strakly tracks the reason with structured catego
 | personal | Personal reasons |
 | other | Other (free-text detail) |
 
-This helps admins understand why members are leaving and identify patterns in churn analytics.
+This helps admins understand why clients are leaving and identify patterns in churn analytics.
 
 ---
 
-## Member Notes
+## Client Notes
 
-Staff can add notes to any member's profile to track interactions, medical info, follow-ups, and more.
+Staff can add notes to any client's profile to track interactions, medical info, follow-ups, and more.
 
-### How to Add a Member Note
+### How to Add a Client Note
 
 1. Go to a client's profile and click the **Notes** tab
 2. Click **"Add Note"**
@@ -658,7 +604,7 @@ Strakly includes a full CRM pipeline for tracking sales leads from initial inqui
 4. Fill in: Name, Email, Phone, Source, Score, Deal Value
 5. **Drag cards** between pipeline stages to track progress
 6. Click a lead card to view details, log activities, and update status
-7. Mark as **Won** then click **"Convert to Client"** to create a member account
+7. Mark as **Won** then click **"Convert to Client"** to create a client account
 
 ### Lead Pipeline Stages
 
@@ -670,7 +616,7 @@ Strakly includes a full CRM pipeline for tracking sales leads from initial inqui
 | Tour Completed | Prospect visited the gym |
 | Proposal Sent | Membership proposal/pricing shared |
 | Negotiation | Negotiating terms or pricing |
-| Won | Lead signed up as a member |
+| Won | Lead signed up as a client |
 | Lost | Lead decided not to join |
 
 ### Lead Scoring
@@ -707,14 +653,14 @@ A: Use the Data Migration tool to import leads from CSV/Excel.
 
 ## Referral Tracking
 
-Track which members bring in new members and reward them.
+Track which clients bring in new clients and reward them.
 
 ### How to Track Referrals
 
 1. Go to **Referrals** page from the sidebar
 2. View all referrals with status and reward info
 3. Click **"Add Referral"** to create a new referral record
-4. Select the **Referrer** (existing member who referred someone)
+4. Select the **Referrer** (existing client who referred someone)
 5. Optionally select the **Referred person**
 6. A **Referral Code** is auto-generated (or enter a custom one)
 7. Click **"Save"**
@@ -738,7 +684,7 @@ Track which members bring in new members and reward them.
 
 ### Common Issues
 
-**Q: Can a member refer themselves?**
+**Q: Can a client refer themselves?**
 A: No. The system prevents self-referrals.
 
 **Q: Is the referral code auto-generated?**
@@ -751,7 +697,7 @@ A: Total referrals, pending count, converted count, rewarded count, and total re
 
 ## Digital Documents & Waivers
 
-Create document templates (waivers, contracts, consent forms) and have members sign them digitally.
+Create document templates (waivers, contracts, consent forms) and have clients sign them digitally.
 
 ### How to Create a Document Template
 
@@ -767,17 +713,17 @@ Create document templates (waivers, contracts, consent forms) and have members s
 1. Go to a client's profile > **Documents** tab
 2. Click **"Sign Document"**
 3. Select the document template
-4. The member signs using the digital signature pad
+4. The client signs using the digital signature pad
 5. A signed copy is saved with: signature data, timestamp, IP address
 6. A **PDF** is auto-generated and can be downloaded
 
 ### Common Issues
 
-**Q: Can I re-use a template for multiple members?**
-A: Yes. Templates are reusable — each member signs their own copy.
+**Q: Can I re-use a template for multiple clients?**
+A: Yes. Templates are reusable — each client signs their own copy.
 
 **Q: How do I download a signed document?**
-A: Go to the member's Documents tab, find the signed document, and click **"Download PDF"**.
+A: Go to the client's Documents tab, find the signed document, and click **"Download PDF"**.
 
 **Q: What document types are available?**
 A: Waiver, Contract, PAR-Q (Physical Activity Readiness Questionnaire), Consent, Terms & Conditions.
@@ -786,7 +732,7 @@ A: Waiver, Contract, PAR-Q (Physical Activity Readiness Questionnaire), Consent,
 
 ## Progress Photos
 
-Track visual progress of members over time with before/during/after photos.
+Track visual progress of clients over time with before/during/after photos.
 
 ### How to Upload Progress Photos
 
@@ -803,9 +749,9 @@ Track visual progress of members over time with before/during/after photos.
 
 | Setting | Who Can See |
 |---------|-------------|
-| All | Admin, Manager, Trainer, and the member |
-| Trainer Only | Admin, Manager, and Trainer (not the member from other's view) |
-| Self Only | Only the member themselves (and admin/manager) |
+| All | Admin, Manager, Trainer, and the client |
+| Trainer Only | Admin, Manager, and Trainer (not the client from other's view) |
+| Self Only | Only the client themselves (and admin/manager) |
 
 ### Compare Mode
 
@@ -816,17 +762,17 @@ Use the **Compare** feature to view two photos side-by-side to track visible cha
 **Q: What image formats are supported?**
 A: JPEG, PNG, WebP, and GIF. Maximum file size is 10MB.
 
-**Q: Can the member see their own photos?**
-A: Yes. Members can view their own photos from the **My Photos** section.
+**Q: Can the client see their own photos?**
+A: Yes. Clients can view their own photos from the **My Photos** section.
 
 **Q: Can I link a photo to body metrics?**
 A: Yes. When uploading, you can optionally link the photo to a body metrics record.
 
 ---
 
-## Member Goals
+## Client Goals
 
-Set structured goals for members to track their fitness journey.
+Set structured goals for clients to track their fitness journey.
 
 ### How to Create a Goal
 
@@ -842,7 +788,7 @@ Set structured goals for members to track their fitness journey.
 
 ### How to Track Goal Progress
 
-1. Go to the member's **Goals** tab
+1. Go to the client's **Goals** tab
 2. Click **"Update Progress"** on a goal
 3. Enter the new **Current Value**
 4. The progress percentage updates automatically
@@ -861,7 +807,7 @@ Break big goals into smaller milestones:
 |--------|-------------|
 | Active | Currently being tracked |
 | Achieved | Goal met! |
-| Abandoned | Member stopped pursuing this goal |
+| Abandoned | Client stopped pursuing this goal |
 
 ---
 
@@ -898,10 +844,10 @@ Sessions are individual class instances (e.g., "Yoga on Monday Feb 17"):
 
 ### How Members Book a Class
 
-1. Members go to the **Classes** page (or use the chatbot: "Book me into yoga")
+1. Clients go to the **Classes** page (or use the chatbot: "Book me into yoga")
 2. Browse available sessions
 3. Click **"Book"** on a session
-4. If the class is full, the member is **auto-added to the waitlist**
+4. If the class is full, the client is **auto-added to the waitlist**
 5. If someone cancels, the first waitlisted person is **auto-promoted to booked**
 
 ### Booking Statuses
@@ -909,10 +855,10 @@ Sessions are individual class instances (e.g., "Yoga on Monday Feb 17"):
 | Status | Description |
 |--------|-------------|
 | Booked | Confirmed booking |
-| Waitlisted | Class is full — member is waiting for a spot |
-| Attended | Member attended the class |
-| No Show | Member didn't show up (this also triggers waitlist promotion) |
-| Cancelled | Member cancelled their booking |
+| Waitlisted | Class is full — client is waiting for a spot |
+| Attended | Client attended the class |
+| No Show | Client didn't show up (this also triggers waitlist promotion) |
+| Cancelled | Client cancelled their booking |
 
 ### Class Session Statuses
 
@@ -925,7 +871,7 @@ Sessions are individual class instances (e.g., "Yoga on Monday Feb 17"):
 ### Common Issues
 
 **Q: What happens if a class is full?**
-A: The member is automatically placed on the waitlist. If anyone cancels or is marked no-show, the first waitlisted member is auto-promoted.
+A: The client is automatically placed on the waitlist. If anyone cancels or is marked no-show, the first waitlisted client is auto-promoted.
 
 **Q: Can I cancel a class session?**
 A: Yes. Go to the session and click **"Cancel Session"**. Enter a cancellation reason.
@@ -995,7 +941,7 @@ The system automatically:
 
 ### Session Packages
 
-Session packages let members pre-purchase a bundle of sessions:
+Session packages let clients pre-purchase a bundle of sessions:
 
 1. Go to **Appointments** > **Packages** tab
 2. Click **"Add Package"**
@@ -1004,7 +950,7 @@ Session packages let members pre-purchase a bundle of sessions:
 5. Set **Expiry Date** (optional)
 6. Click **"Save"**
 
-When an appointment is marked as **Completed**, the system automatically deducts 1 session from the member's active package. Expired packages are not deducted.
+When an appointment is marked as **Completed**, the system automatically deducts 1 session from the client's active package. Expired packages are not deducted.
 
 ### Common Issues
 
@@ -1037,7 +983,7 @@ Track guest visitors who come for a day pass without a membership.
    - **Guest Name** (required)
    - **Phone** (optional)
    - **Email** (optional)
-   - **Brought By** — select the member who invited the guest (optional)
+   - **Brought By** — select the client who invited the guest (optional)
    - **Day Pass Amount** (e.g., Rs. 200)
    - **Payment Method** (cash, card, UPI)
    - **Notes** (optional)
@@ -1045,9 +991,9 @@ Track guest visitors who come for a day pass without a membership.
 
 ### Guest Visit Limits
 
-Each member can bring a maximum of **5 guests per month**. If a member has already brought 5 guests this month, the system will block additional guest registrations for that member until the next month.
+Each client can bring a maximum of **5 guests per month**. If a client has already brought 5 guests this month, the system will block additional guest registrations for that client until the next month.
 
-### Converting a Guest to a Member
+### Converting a Guest to a Client
 
 When a guest decides to join:
 1. Go to **Guest Visits** page
@@ -1060,7 +1006,7 @@ When a guest decides to join:
 
 View stats at the top of the Guest Visits page:
 - **Total Visits** — all-time guest visits
-- **Converted to Member** — how many guests became members
+- **Converted to Client** — how many guests became clients
 - **Conversion Rate** — percentage of guests who converted
 - **Total Revenue** — total day pass revenue collected
 - **This Month** — guest visits this month
@@ -1068,14 +1014,14 @@ View stats at the top of the Guest Visits page:
 
 ### Common Issues
 
-**Q: Is there a limit on how many guests a member can bring?**
-A: Yes, 5 guests per member per month.
+**Q: Is there a limit on how many guests a client can bring?**
+A: Yes, 5 guests per client per month.
 
 **Q: Can I search for a past guest?**
 A: Yes. Use the search bar on the Guest Visits page to search by guest name, phone, or email.
 
-**Q: How do I track which members bring the most guests?**
-A: Use the "Brought By" filter on the Guest Visits page to see guests grouped by referring member.
+**Q: How do I track which clients bring the most guests?**
+A: Use the "Brought By" filter on the Guest Visits page to see guests grouped by referring client.
 
 ---
 
@@ -1099,7 +1045,7 @@ Manage supplements, merchandise, drinks, and accessories with inventory tracking
 1. Go to **Products** > **Sales** tab (or POS interface)
 2. Select the product (or scan barcode)
 3. Enter quantity
-4. Select the member (optional) and payment method
+4. Select the client (optional) and payment method
 5. Click **"Complete Sale"**
 6. Stock is automatically decremented
 
@@ -1119,7 +1065,7 @@ A: Yes. Go to Products > Sales tab to see all sales with date, product, quantity
 
 ## Email / SMS Campaigns
 
-Send targeted email and SMS campaigns to members.
+Send targeted email and SMS campaigns to clients.
 
 ### How to Create a Campaign
 
@@ -1127,7 +1073,7 @@ Send targeted email and SMS campaigns to members.
 2. Click **"Create Campaign"**
 3. Select **Type**: Email or SMS
 4. Select or create a **Template** with merge fields (e.g., {{first_name}}, {{plan_name}})
-5. Set **Audience** — choose target group (all members, active only, expiring soon, specific branch, etc.)
+5. Set **Audience** — choose target group (all clients, active only, expiring soon, etc.)
 6. Set **Scheduled Time** (or send immediately)
 7. Review and click **"Send"** or **"Schedule"**
 
@@ -1151,11 +1097,8 @@ After sending, view delivery stats:
 
 ### Common Issues
 
-**Q: Can I send a campaign to only one branch?**
-A: Yes. Set the audience filter to a specific branch.
-
 **Q: Can I use merge fields in templates?**
-A: Yes. Use {{first_name}}, {{plan_name}}, {{branch_name}}, etc. These are replaced with actual data when sent.
+A: Yes. Use {{first_name}}, {{plan_name}}, etc. These are replaced with actual data when sent.
 
 ---
 
@@ -1167,7 +1110,7 @@ Track gym equipment inventory, status, and maintenance schedules.
 
 1. Go to **Equipment** page from the sidebar
 2. Click **"Add Equipment"**
-3. Fill in: Name, Brand, Model, Serial Number, Purchase Date, Purchase Cost, Warranty Expiry, Location (branch/zone)
+3. Fill in: Name, Brand, Model, Serial Number, Purchase Date, Purchase Cost, Warranty Expiry, Location (zone)
 4. Click **"Save"**
 
 ### Equipment Statuses
@@ -1199,7 +1142,7 @@ A: Edit the equipment and change the status to "Under Repair". Then schedule a m
 
 ## Custom Fields
 
-Configure custom data fields on member profiles, memberships, and leads — specific to your gym's needs.
+Configure custom data fields on client profiles, memberships, and leads — specific to your gym's needs.
 
 ### How to Create Custom Fields
 
@@ -1208,17 +1151,17 @@ Configure custom data fields on member profiles, memberships, and leads — spec
 3. Fill in:
    - **Name** and **Label**
    - **Field Type**: text, number, date, dropdown, checkbox, file
-   - **Entity Type**: user (member profile), membership, lead
+   - **Entity Type**: user (client profile), membership, lead
    - **Required** (yes/no)
    - **Options** (for dropdown type — enter choices)
 4. Click **"Save"**
 
-The custom field will now appear on the relevant forms (member profile, membership form, or lead form).
+The custom field will now appear on the relevant forms (client profile, membership form, or lead form).
 
 ### Common Issues
 
 **Q: Where do custom fields appear?**
-A: On the respective entity's form — member profile, membership details, or lead details.
+A: On the respective entity's form — client profile, membership details, or lead details.
 
 **Q: Can I make a custom field required?**
 A: Yes. Mark it as "Required" and it will be mandatory when creating/editing the entity.
@@ -1227,27 +1170,27 @@ A: Yes. Mark it as "Required" and it will be mandatory when creating/editing the
 
 ## Engagement Scoring & Churn Prediction
 
-Strakly uses AI-powered scoring to identify at-risk members before they leave.
+Strakly uses AI-powered scoring to identify at-risk clients before they leave.
 
 ### Engagement Dashboard
 
 Go to **Engagement** page to see:
-- **Overall engagement score** across all members
-- **Risk distribution** — how many members are at each risk level
+- **Overall engagement score** across all clients
+- **Risk distribution** — how many clients are at each risk level
 - **Trending metrics** — visit frequency changes, declining attendance
 
 ### Risk Levels
 
 | Level | Description |
 |-------|-------------|
-| Low | Member is engaged and active |
+| Low | Client is engaged and active |
 | Medium | Some signs of decreased activity |
 | High | Significant decline in visits or engagement |
 | Critical | Very likely to churn — needs immediate attention |
 
 ### Churn Alerts
 
-The system automatically generates alerts for at-risk members based on:
+The system automatically generates alerts for at-risk clients based on:
 - Declining visit frequency
 - Missed consecutive days
 - Payment failures
@@ -1257,7 +1200,7 @@ View alerts in the **Engagement** > **Alerts** tab.
 
 ### Common Issues
 
-**Q: How do I see which members are at risk of leaving?**
+**Q: How do I see which clients are at risk of leaving?**
 A: Go to Engagement page and filter by "High" or "Critical" risk. Or ask the chatbot: "Who is at risk of churning?"
 
 **Q: How is the engagement score calculated?**
@@ -1267,7 +1210,7 @@ A: Based on visit frequency, recency of last visit, attendance trends, payment h
 
 ## Challenges & Gamification
 
-Run challenges, track achievements, and maintain leaderboards to keep members motivated.
+Run challenges, track achievements, and maintain leaderboards to keep clients motivated.
 
 ### How to Create a Challenge
 
@@ -1284,23 +1227,23 @@ Run challenges, track achievements, and maintain leaderboards to keep members mo
 
 ### Achievements & Badges
 
-Members automatically earn badges based on milestones:
+Clients automatically earn badges based on milestones:
 - Attendance streaks (7 days, 30 days, 100 days)
 - Challenge completions
 - Goal achievements
 - Loyalty tier promotions
 
-View a member's achievements from their profile or ask the chatbot: "Show achievements for [member name]"
+View a client's achievements from their profile or ask the chatbot: "Show achievements for [client name]"
 
 ### Leaderboards
 
 Each challenge has a live leaderboard showing:
-- Rank, Member Name, Score/Progress
-- Updated as members check in or log progress
+- Rank, Client Name, Score/Progress
+- Updated as clients check in or log progress
 
 ### Streaks
 
-Strakly automatically tracks consecutive attendance streaks for every member. When a member checks in, their streak increments. View streaks in the Gamification or member profile section.
+Strakly automatically tracks consecutive attendance streaks for every client. When a client checks in, their streak increments. View streaks in the Gamification or client profile section.
 
 ### Common Issues
 
@@ -1308,17 +1251,17 @@ Strakly automatically tracks consecutive attendance streaks for every member. Wh
 A: Go to Gamification > click on the challenge > view the leaderboard tab.
 
 **Q: Are achievements awarded automatically?**
-A: Yes. Achievements are auto-awarded when members hit milestones (e.g., 7-day streak badge).
+A: Yes. Achievements are auto-awarded when clients hit milestones (e.g., 7-day streak badge).
 
 ---
 
 ## Loyalty / Rewards Program
 
-Reward members with points for visits, purchases, referrals, and more.
+Reward clients with points for visits, purchases, referrals, and more.
 
 ### How It Works
 
-Members earn **Loyalty Points** through:
+Clients earn **Loyalty Points** through:
 - Gym visits (check-in)
 - Referrals that convert
 - Challenge completions
@@ -1341,29 +1284,29 @@ Points can be **redeemed** for:
 
 Tiers and their thresholds can be configured by the admin.
 
-### How to Check a Member's Points
+### How to Check a Client's Points
 
-1. Go to the member's profile
+1. Go to the client's profile
 2. View their **Loyalty Points** balance and current tier
-3. Or ask the chatbot: "How many loyalty points does [member] have?"
+3. Or ask the chatbot: "How many loyalty points does [client] have?"
 
 ### How to View Available Rewards
 
-Go to **Loyalty** > **Rewards** tab to see what members can redeem their points for.
+Go to **Loyalty** > **Rewards** tab to see what clients can redeem their points for.
 
 ### Common Issues
 
-**Q: How do members earn points?**
+**Q: How do clients earn points?**
 A: Automatically on check-in, referral completion, and challenge completion. Points can also be manually awarded by admin.
 
-**Q: How do members redeem points?**
+**Q: How do clients redeem points?**
 A: Through the Loyalty > Rewards section — select a reward and redeem.
 
 ---
 
 ## Wearable Integration
 
-Members can connect their fitness wearable devices to sync health data into Strakly.
+Clients can connect their fitness wearable devices to sync health data into Strakly.
 
 ### Supported Devices
 
@@ -1387,7 +1330,7 @@ Members can connect their fitness wearable devices to sync health data into Stra
 
 ### How to Connect a Wearable
 
-1. Go to **Settings** > **Wearables** (or member's Health tab)
+1. Go to **Settings** > **Wearables** (or client's Health tab)
 2. Click **"Connect Device"**
 3. Select the wearable provider
 4. Authorize the connection
@@ -1395,9 +1338,9 @@ Members can connect their fitness wearable devices to sync health data into Stra
 
 ### Viewing Wearable Data
 
-- Members see their daily health summary in the **Health** section
-- Trainers/admins can view a member's wearable data from their profile
-- The chatbot can retrieve this: "Show health data for [member]"
+- Clients see their daily health summary in the **Health** section
+- Trainers/admins can view a client's wearable data from their profile
+- The chatbot can retrieve this: "Show health data for [client]"
 
 ### Common Issues
 
@@ -1409,7 +1352,7 @@ A: Yes, trainers assigned to you can view your health metrics to better plan you
 
 ---
 
-## NPS & Member Surveys
+## NPS & Client Surveys
 
 Create surveys, collect feedback, and track your Net Promoter Score (NPS).
 
@@ -1452,9 +1395,9 @@ Create surveys, collect feedback, and track your Net Promoter Score (NPS).
 ### NPS (Net Promoter Score)
 
 NPS measures customer loyalty on a 0-10 scale:
-- **Promoters (9-10)** — Loyal members who will refer others
+- **Promoters (9-10)** — Loyal clients who will refer others
 - **Passives (7-8)** — Satisfied but not enthusiastic
-- **Detractors (0-6)** — Unhappy members at risk of leaving
+- **Detractors (0-6)** — Unhappy clients at risk of leaving
 
 **NPS Score** = % Promoters - % Detractors (ranges from -100 to +100)
 
@@ -1466,7 +1409,7 @@ View the latest NPS from the Surveys page or ask the chatbot: "What's our NPS sc
 A: Yes. Set the "Anonymous" toggle when creating the survey.
 
 **Q: How do I see who hasn't completed a survey?**
-A: Active surveys show a list of pending members who haven't responded yet.
+A: Active surveys show a list of pending clients who haven't responded yet.
 
 **Q: Can I trigger surveys automatically?**
 A: Yes. Set a trigger type (e.g., after class, after cancellation) to auto-send.
@@ -1479,7 +1422,7 @@ Strakly supports multiple currencies for gyms operating in different countries.
 
 ### How It Works
 
-- Each gym/branch can have a **default currency**
+- Each gym can have a **default currency**
 - Transactions record the currency used
 - Exchange rates are configured in the system
 - Reports show amounts in the gym's default currency
@@ -1546,8 +1489,8 @@ Each section has a **hub page** showing all features in that category as an app 
 
 **Available Hubs:**
 - **Daily Operations** (`/daily-operations`): Clients, attendance, classes, appointments, guest visits, diet, announcements
-- **Management** (`/management`): Staff, branch admins, managers, trainers, salary
-- **Resources** (`/resources`): Branches, facilities, amenities, equipment
+- **Management** (`/management`): Staff, managers, trainers, salary
+- **Resources** (`/resources`): Facilities, amenities, equipment
 - **Growth** (`/growth`): Leads, referrals, campaigns, guest passes, engagement, gamification, loyalty, surveys, wearables
 - **Finance** (`/finance`): Plans, memberships, offers, products, financial reports
 - **Platform** (`/platform`): Users, gyms, SaaS subscriptions (Superadmin only)
@@ -1588,20 +1531,19 @@ Shows totals by payment method: Cash, Card, Bank Transfer, Online.
 
 ## Tips & Best Practices
 
-1. **Branch Selection**: Use the branch selector in the navbar to filter data by specific branch
-2. **Search**: Use the search bar to quickly find clients, trainers, or any data
+1. **Search**: Use the search bar to quickly find clients, trainers, or any data
 3. **Export**: Most tables have an export option to download data as Excel/CSV
 4. **Notifications**: Check the bell icon for important alerts and reminders
 5. **Settings**: Go to Settings to customize your preferences
 6. **Support**: Use the Support page or chat assistant for help
 7. **Lead Follow-ups**: Log every interaction with leads to improve conversion rates
-8. **Referral Program**: Encourage members to refer friends — track and reward through the Referrals page
-9. **Regular Surveys**: Run monthly NPS surveys to measure member satisfaction
-10. **Challenge Members**: Create monthly challenges to boost engagement and attendance
+8. **Referral Program**: Encourage clients to refer friends — track and reward through the Referrals page
+9. **Regular Surveys**: Run monthly NPS surveys to measure client satisfaction
+10. **Challenge Clients**: Create monthly challenges to boost engagement and attendance
 11. **Equipment Maintenance**: Schedule preventive maintenance to avoid equipment breakdowns
 12. **Low Stock Alerts**: Check product inventory regularly — restock before items run out
-13. **At-Risk Members**: Review the Engagement dashboard weekly to identify and retain at-risk members
-14. **Progress Photos**: Encourage members to take monthly progress photos for motivation
+13. **At-Risk Clients**: Review the Engagement dashboard weekly to identify and retain at-risk clients
+14. **Progress Photos**: Encourage clients to take monthly progress photos for motivation
 15. **Freeze Instead of Cancel**: Offer membership freezes as an alternative to cancellation
 
 ---

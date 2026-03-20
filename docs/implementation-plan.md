@@ -51,7 +51,7 @@ A FastAPI-based chatbot that uses RAG (Retrieval-Augmented Generation) to answer
 ## Flow
 
 1. **User sends message** with JWT token from frontend
-2. **Bot extracts tenant context** from JWT (gymId, branchId, userId, role)
+2. **Bot extracts tenant context** from JWT (gymId, userId, role)
 3. **LangChain Agent** analyzes the question and decides which tools to use
 4. **Tools call NestJS APIs** with the same JWT token for authentication
 5. **Data is retrieved** and passed back to the agent
@@ -83,7 +83,7 @@ Authorization: Bearer <jwt_token>
 ```json
 {
   "success": true,
-  "response": "You currently have 245 active members across all branches. Downtown branch has the highest with 120 members.",
+  "response": "You currently have 245 active clients.",
   "conversation_id": "uuid",
   "tools_used": ["get_clients_stats"]
 }
@@ -109,7 +109,7 @@ Tools that the agent can use to fetch data from NestJS backend:
 
 | Tool | Description | Backend API |
 |------|-------------|-------------|
-| `get_clients_stats` | Get client/member statistics | GET /api/clients/stats |
+| `get_clients_stats` | Get client statistics | GET /api/clients/stats |
 | `get_clients_list` | Get list of clients with filters | GET /api/clients |
 | `get_attendance_today` | Get today's attendance | GET /api/attendance/today |
 | `get_attendance_stats` | Get attendance statistics | GET /api/attendance/stats |
@@ -118,7 +118,6 @@ Tools that the agent can use to fetch data from NestJS backend:
 | `get_memberships_stats` | Get membership statistics | GET /api/memberships/stats |
 | `get_trainers_list` | Get trainers list | GET /api/trainers |
 | `get_enquiries` | Get enquiry/leads list | GET /api/enquiries |
-| `get_branch_info` | Get branch information | GET /api/branches |
 | `get_gym_info` | Get gym information | GET /api/gyms/me |
 | `get_subscription_info` | Get SaaS subscription | GET /api/saas-subscriptions/me |
 
@@ -135,19 +134,20 @@ strakly-bot/
 ├── tools/
 │   ├── __init__.py
 │   ├── base.py             # Base tool with API client
-│   ├── clients.py          # Client/member tools
+│   ├── clients.py          # Client tools
 │   ├── attendance.py       # Attendance tools
 │   ├── revenue.py          # Revenue/financial tools
 │   ├── memberships.py      # Membership tools
 │   ├── trainers.py         # Trainer tools
 │   ├── enquiries.py        # Enquiry tools
-│   └── gym.py              # Gym & branch tools
+│   └── gym.py              # Gym tools
 ├── prompts/
 │   └── system_prompt.py    # System prompts for agent
 ├── models/
 │   └── schemas.py          # Pydantic models
 ├── docs/
-│   └── implementation-plan.md
+│   ├── implementation-plan.md
+│   └── user_guide.md
 ├── requirements.txt
 ├── .env.example
 └── README.md
@@ -191,14 +191,14 @@ LOG_LEVEL=INFO
 
 ## Example Conversations
 
-### Example 1: Member Count
-**User:** "How many active members do I have?"
+### Example 1: Client Count
+**User:** "How many active clients do I have?"
 
 **Agent thinks:** Need to get client statistics
 **Tool called:** `get_clients_stats`
-**API Response:** `{"total": 245, "active": 230, "inactive": 15, "byBranch": [...]}`
+**API Response:** `{"total": 245, "active": 230, "inactive": 15}`
 
-**Bot Response:** "You have 230 active members out of 245 total. 15 members are currently inactive."
+**Bot Response:** "You have 230 active clients out of 245 total. 15 clients are currently inactive."
 
 ---
 
@@ -209,7 +209,7 @@ LOG_LEVEL=INFO
 **Tool called:** `get_attendance_today`
 **API Response:** `{"total": 89, "checkIns": [...], "peakHour": "6:00 PM"}`
 
-**Bot Response:** "Today you've had 89 check-ins so far. The peak hour was 6:00 PM with 23 members checking in."
+**Bot Response:** "Today you've had 89 check-ins so far. The peak hour was 6:00 PM with 23 clients checking in."
 
 ---
 
@@ -225,7 +225,7 @@ LOG_LEVEL=INFO
 ---
 
 ### Example 4: Expiring Memberships
-**User:** "Which members' subscriptions are expiring this week?"
+**User:** "Which clients' subscriptions are expiring this week?"
 
 **Agent thinks:** Need expiring membership data
 **Tool called:** `get_memberships_expiring`
@@ -289,8 +289,9 @@ LOG_LEVEL=INFO
 | `/api/trainers/stats` | GET | ⚠️ Verify | Trainer statistics |
 | `/api/enquiries` | GET | ✅ Likely exists | List enquiries |
 | `/api/enquiries/stats` | GET | ⚠️ Verify | Enquiry statistics |
-| `/api/branches` | GET | ✅ Likely exists | List branches |
 | `/api/gyms/me` | GET | ⚠️ Verify | Current gym info |
+| `/api/products/sales/:id` | DELETE | ✅ New | Void/delete a sale |
+| `/api/products/sales/batch/:paymentId` | DELETE | ✅ New | Void/delete sales by payment |
 
 ### Expected Response Formats
 
@@ -331,7 +332,6 @@ LOG_LEVEL=INFO
   "sub": 123,
   "userId": 123,
   "gymId": 1,
-  "branchId": 2,
   "role": "admin",
   "email": "user@gym.com",
   "name": "John Doe"
