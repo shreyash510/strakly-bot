@@ -1,6 +1,6 @@
 """Dynamic tool selection to stay within the 128-tool limit.
 
-Categorises the 137 LangChain tools, matches user messages against
+Categorises the 138 LangChain tools, matches user messages against
 keyword rules, and returns only the relevant subset (always ≤ 128).
 Zero latency cost — pure keyword matching, no extra LLM call.
 """
