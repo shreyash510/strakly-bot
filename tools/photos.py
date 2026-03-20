@@ -3,16 +3,16 @@ from .base import get_api_client, extract_list
 
 
 @tool
-async def get_member_photos(user_id: int, category: str = None) -> dict:
-    """Get progress photos for a specific member.
+async def get_client_photos(user_id: int, category: str = None) -> dict:
+    """Get progress photos for a specific client.
 
     Args:
-        user_id: The user ID of the member (required)
+        user_id: The user ID of the client (required)
         category: Filter by category - front, side, back, or other (optional)
 
     Use this tool when user asks about:
-    - Member's progress photos
-    - Show me photos for a member
+    - Client's progress photos
+    - Show me photos for a client
     - Progress tracking photos
     """
     client = get_api_client()
@@ -25,7 +25,7 @@ async def get_member_photos(user_id: int, category: str = None) -> dict:
         photos = extract_list(response)
 
         if not photos:
-            return {"count": 0, "photos": [], "message": "No progress photos found for this member."}
+            return {"count": 0, "photos": [], "message": "No progress photos found for this client."}
 
         return {
             "count": len(photos),

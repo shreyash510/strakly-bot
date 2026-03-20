@@ -17,6 +17,7 @@ from tools import (
     # Memberships
     get_client_membership, get_membership_stats, get_active_membership_clients,
     freeze_membership, unfreeze_membership, get_freeze_history,
+    renew_membership,
     # Attendance
     get_attendance_today, get_attendance_stats, get_attendance_reports,
     get_attendance_by_date, get_all_attendance, get_present_count,
@@ -26,8 +27,8 @@ from tools import (
     get_trainers_list, get_trainers_stats,
     # Enquiries
     get_enquiries_list, get_enquiries_stats, create_enquiry, bulk_create_enquiries,
-    # Gym & Branches
-    get_gym_info, get_branches_info, get_current_branch, create_branch,
+    # Gym
+    get_gym_info,
     # Staff
     get_managers_list, get_staff_list, get_staff_details, get_branch_admins_list, create_staff,
     # Salary
@@ -55,14 +56,14 @@ from tools import (
     get_document_templates, get_template_details,
     get_signed_documents_for_user, create_document_template,
     get_signed_document_pdf,
-    # Member Goals
-    get_member_goals, create_member_goal,
+    # Client Goals
+    get_client_goals, create_client_goal,
     update_goal_progress, update_goal_status,
     get_goal_milestones, create_goal_milestone, toggle_milestone_complete,
     # Progress Photos
-    get_member_photos, get_photo_details,
-    # Member Notes
-    get_member_notes, create_member_note, toggle_note_pin,
+    get_client_photos, get_photo_details,
+    # Client Notes
+    get_client_notes, create_client_note, toggle_note_pin,
     # Classes
     get_class_types, get_class_sessions, get_session_bookings, get_my_class_bookings,
     # Appointments
@@ -71,6 +72,7 @@ from tools import (
     get_guest_visits, get_guest_visit_stats,
     # Products
     get_products, get_low_stock_products, get_sales_stats,
+    void_product_sale, void_batch_sale, get_product_sales,
     # Campaigns
     get_campaigns, get_campaign_details,
     # Equipment
@@ -96,7 +98,7 @@ logger = logging.getLogger(__name__)
 # ── Always-included tools (8) ──────────────────────────────────────
 CORE_TOOLS = [
     change_theme, navigate_to_page,
-    get_gym_info, get_branches_info, get_current_branch, create_branch,
+    get_gym_info,
     get_currencies, convert_currency,
 ]
 
@@ -111,6 +113,7 @@ TOOL_CATEGORIES: dict[str, list] = {
     "memberships": [
         get_client_membership, get_membership_stats, get_active_membership_clients,
         freeze_membership, unfreeze_membership, get_freeze_history,
+        renew_membership,
     ],
     "attendance": [
         get_attendance_today, get_attendance_stats, get_attendance_reports,
@@ -159,15 +162,15 @@ TOOL_CATEGORIES: dict[str, list] = {
         get_signed_document_pdf,
     ],
     "goals": [
-        get_member_goals, create_member_goal,
+        get_client_goals, create_client_goal,
         update_goal_progress, update_goal_status,
         get_goal_milestones, create_goal_milestone, toggle_milestone_complete,
     ],
     "photos": [
-        get_member_photos, get_photo_details,
+        get_client_photos, get_photo_details,
     ],
     "notes": [
-        get_member_notes, create_member_note, toggle_note_pin,
+        get_client_notes, create_client_note, toggle_note_pin,
     ],
     "classes": [
         get_class_types, get_class_sessions, get_session_bookings, get_my_class_bookings,
@@ -180,6 +183,7 @@ TOOL_CATEGORIES: dict[str, list] = {
     ],
     "products": [
         get_products, get_low_stock_products, get_sales_stats,
+        void_product_sale, void_batch_sale, get_product_sales,
     ],
     "campaigns": [
         get_campaigns, get_campaign_details,
@@ -270,7 +274,7 @@ CATEGORY_KEYWORDS: dict[str, list[str]] = {
     ],
     "goals": [
         "goal", "target", "milestone", "progress", "fitness goal",
-        "member goal",
+        "client goal",
     ],
     "photos": [
         "photo", "picture", "image", "transformation",
@@ -293,7 +297,7 @@ CATEGORY_KEYWORDS: dict[str, list[str]] = {
     ],
     "products": [
         "product", "inventory", "stock", "retail", "pos", "shop",
-        "store", "sell", "low stock",
+        "store", "sell", "low stock", "void", "batch", "sale",
     ],
     "campaigns": [
         "campaign", "email campaign", "sms", "marketing",

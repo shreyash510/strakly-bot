@@ -3,22 +3,22 @@ from .base import get_api_client, extract_list
 
 
 @tool
-async def get_member_notes(user_id: int, note_type: str = None) -> dict:
-    """Get notes for a specific member.
+async def get_client_notes(user_id: int, note_type: str = None) -> dict:
+    """Get notes for a specific client.
 
     Args:
-        user_id: The user ID of the member (required)
+        user_id: The user ID of the client (required)
         note_type: Filter by type - general, medical, interaction, or follow_up (optional)
 
     Use this tool when user asks about:
-    - Notes on a member
-    - Member notes or comments
+    - Notes on a client
+    - Client notes or comments
     - Medical notes for a client
-    - Interaction history for a member
+    - Interaction history for a client
     """
     client = get_api_client()
     try:
-        params = {"memberId": user_id, "limit": 50}
+        params = {"userId": user_id, "limit": 50}
         if note_type and note_type in ("general", "medical", "interaction", "follow_up"):
             params["noteType"] = note_type
 
@@ -26,7 +26,7 @@ async def get_member_notes(user_id: int, note_type: str = None) -> dict:
         notes = extract_list(response)
 
         if not notes:
-            return {"count": 0, "notes": [], "message": "No notes found for this member."}
+            return {"count": 0, "notes": [], "message": "No notes found for this client."}
 
         return {
             "count": len(notes),
@@ -48,13 +48,13 @@ async def get_member_notes(user_id: int, note_type: str = None) -> dict:
 
 
 @tool
-async def create_member_note(user_id: int, content: str, note_type: str = "general", visibility: str = "all") -> dict:
-    """Create a new note for a member.
+async def create_client_note(user_id: int, content: str, note_type: str = "general", visibility: str = "all") -> dict:
+    """Create a new note for a client.
 
     IMPORTANT: Only call this tool AFTER showing confirmation to the user and getting their approval.
 
     Args:
-        user_id: The user ID of the member (required)
+        user_id: The user ID of the client (required)
         content: The note content (required)
         note_type: Type - general, medical, interaction, or follow_up (optional, default: general)
         visibility: Who can see - all, trainer_only, or admin_only (optional, default: all)
@@ -79,7 +79,7 @@ async def create_member_note(user_id: int, content: str, note_type: str = "gener
         response = await client.post("/member-notes", data)
         return {
             "success": True,
-            "message": f"Note created for member",
+            "message": f"Note created for client",
             "note": response,
         }
     except Exception as e:
@@ -88,7 +88,7 @@ async def create_member_note(user_id: int, content: str, note_type: str = "gener
 
 @tool
 async def toggle_note_pin(note_id: int) -> dict:
-    """Toggle pin/unpin a member note.
+    """Toggle pin/unpin a client note.
 
     IMPORTANT: Only call this tool AFTER showing confirmation to the user and getting their approval.
 
