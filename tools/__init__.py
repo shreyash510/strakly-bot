@@ -8,6 +8,7 @@ from .clients import (
 from .memberships import (
     get_client_membership, get_membership_stats, get_active_membership_clients,
     freeze_membership, unfreeze_membership, get_freeze_history,
+    renew_membership,
 )
 from .attendance import (
     get_attendance_today, get_attendance_stats, get_attendance_reports,
@@ -16,7 +17,7 @@ from .attendance import (
 from .revenue import get_revenue_stats, get_membership_sales
 from .trainers import get_trainers_list, get_trainers_stats
 from .enquiries import get_enquiries_list, get_enquiries_stats, create_enquiry, bulk_create_enquiries
-from .gym import get_gym_info, get_branches_info, get_current_branch, create_branch
+from .gym import get_gym_info
 from .staff import get_managers_list, get_staff_list, get_staff_details, get_branch_admins_list, create_staff
 from .salary import get_salary_by_name, get_staff_salary, get_salary_stats, get_pending_salaries, get_all_salaries, create_salary
 from .facilities import get_amenities_list, get_facilities_list, create_amenity, create_facility
@@ -40,16 +41,16 @@ from .documents import (
     get_signed_document_pdf,
 )
 from .goals import (
-    get_member_goals, create_member_goal,
+    get_client_goals, create_client_goal,
     update_goal_progress, update_goal_status,
     get_goal_milestones, create_goal_milestone, toggle_milestone_complete,
 )
-from .photos import get_member_photos, get_photo_details
-from .notes import get_member_notes, create_member_note, toggle_note_pin
+from .photos import get_client_photos, get_photo_details
+from .notes import get_client_notes, create_client_note, toggle_note_pin
 from .classes import get_class_types, get_class_sessions, get_session_bookings, get_my_class_bookings
 from .appointments import get_services, get_trainer_availability, get_available_slots, get_appointments
 from .guests import get_guest_visits, get_guest_visit_stats
-from .products import get_products, get_low_stock_products, get_sales_stats
+from .products import get_products, get_low_stock_products, get_sales_stats, void_product_sale, void_batch_sale, get_product_sales
 from .campaigns import get_campaigns, get_campaign_details
 from .equipment import get_equipment, get_equipment_stats, get_upcoming_maintenance
 from .custom_fields import get_custom_fields, get_entity_custom_values
@@ -70,6 +71,7 @@ ALL_TOOLS = [
     # Memberships
     get_client_membership, get_membership_stats, get_active_membership_clients,
     freeze_membership, unfreeze_membership, get_freeze_history,
+    renew_membership,
     # Attendance
     get_attendance_today, get_attendance_stats, get_attendance_reports,
     get_attendance_by_date, get_all_attendance, get_present_count,
@@ -79,8 +81,8 @@ ALL_TOOLS = [
     get_trainers_list, get_trainers_stats,
     # Enquiries
     get_enquiries_list, get_enquiries_stats, create_enquiry, bulk_create_enquiries,
-    # Gym & Branches
-    get_gym_info, get_branches_info, get_current_branch, create_branch,
+    # Gym
+    get_gym_info,
     # Staff
     get_managers_list, get_staff_list, get_staff_details, get_branch_admins_list, create_staff,
     # Salary
@@ -108,14 +110,14 @@ ALL_TOOLS = [
     get_document_templates, get_template_details,
     get_signed_documents_for_user, create_document_template,
     get_signed_document_pdf,
-    # Member Goals
-    get_member_goals, create_member_goal,
+    # Client Goals
+    get_client_goals, create_client_goal,
     update_goal_progress, update_goal_status,
     get_goal_milestones, create_goal_milestone, toggle_milestone_complete,
     # Progress Photos
-    get_member_photos, get_photo_details,
-    # Member Notes
-    get_member_notes, create_member_note, toggle_note_pin,
+    get_client_photos, get_photo_details,
+    # Client Notes
+    get_client_notes, create_client_note, toggle_note_pin,
     # Classes (Group Scheduling)
     get_class_types, get_class_sessions, get_session_bookings, get_my_class_bookings,
     # Appointments (PT Booking)
@@ -124,6 +126,7 @@ ALL_TOOLS = [
     get_guest_visits, get_guest_visit_stats,
     # Products (POS / Retail)
     get_products, get_low_stock_products, get_sales_stats,
+    void_product_sale, void_batch_sale, get_product_sales,
     # Campaigns (Email / SMS)
     get_campaigns, get_campaign_details,
     # Equipment

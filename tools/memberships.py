@@ -209,3 +209,22 @@ async def get_freeze_history(membership_id: int) -> dict:
         }
     except Exception as e:
         return {"error": str(e)}
+
+
+@tool
+async def renew_membership(user_id: int, plan_id: int, payment_method: str = "cash", start_date: str = "") -> str:
+    """Renew a client's membership with a new plan. The new membership starts from the old one's end date.
+
+    Use when: admin wants to renew a client's membership, extend subscription, re-enroll a client.
+
+    Args:
+        user_id: The client's user ID
+        plan_id: The membership plan ID to renew with
+        payment_method: Payment method (cash, card, upi, bank_transfer). Defaults to cash.
+        start_date: Optional start date (YYYY-MM-DD). If empty, starts from current membership end date.
+    """
+    client = get_api_client()
+    body = {"userId": user_id, "planId": plan_id, "paymentMethod": payment_method}
+    if start_date:
+        body["startDate"] = start_date
+    return await client.post("/memberships/renew", body)

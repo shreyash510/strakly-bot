@@ -110,3 +110,52 @@ async def get_sales_stats(date_from: str = None, date_to: str = None) -> dict:
         return response
     except Exception as e:
         return {"error": str(e)}
+
+
+@tool
+async def void_product_sale(sale_id: int) -> str:
+    """Void/delete a single product sale. This restores stock and voids the payment.
+    Only admins can void sales.
+
+    Use when: admin wants to void/delete/cancel a product sale, undo a sale, or reverse a transaction.
+
+    Args:
+        sale_id: The ID of the product sale to void
+    """
+    client = get_api_client()
+    return await client.delete(f"/products/sales/{sale_id}")
+
+
+@tool
+async def void_batch_sale(payment_id: int) -> str:
+    """Void/delete all product sales in a batch (all items purchased together in one transaction).
+    This restores stock for all items and voids the payment. Only admins can void sales.
+
+    Use when: admin wants to void an entire batch/transaction of product sales.
+
+    Args:
+        payment_id: The payment ID linking all sales in the batch
+    """
+    client = get_api_client()
+    return await client.delete(f"/products/sales/batch/{payment_id}")
+
+
+@tool
+async def get_product_sales(start_date: str = "", end_date: str = "", page: int = 1, limit: int = 15) -> str:
+    """Get product sales history with optional date filtering.
+
+    Use when: user asks about sales history, recent sales, sales report, what was sold.
+
+    Args:
+        start_date: Optional start date filter (YYYY-MM-DD)
+        end_date: Optional end date filter (YYYY-MM-DD)
+        page: Page number for pagination (default 1)
+        limit: Items per page (default 15)
+    """
+    client = get_api_client()
+    params = {"page": page, "limit": limit}
+    if start_date:
+        params["startDate"] = start_date
+    if end_date:
+        params["endDate"] = end_date
+    return await client.get("/products/sales", params)

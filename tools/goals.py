@@ -3,17 +3,17 @@ from .base import get_api_client, extract_list
 
 
 @tool
-async def get_member_goals(user_id: int, status: str = None) -> dict:
-    """Get goals for a specific member.
+async def get_client_goals(user_id: int, status: str = None) -> dict:
+    """Get goals for a specific client.
 
     Args:
-        user_id: The user ID of the member (required)
+        user_id: The user ID of the client (required)
         status: Filter by status - active, achieved, or abandoned (optional)
 
     Use this tool when user asks about:
-    - Member's goals
-    - What goals does a member have
-    - Goal progress for a member
+    - Client's goals
+    - What goals does a client have
+    - Goal progress for a client
     """
     client = get_api_client()
     try:
@@ -25,7 +25,7 @@ async def get_member_goals(user_id: int, status: str = None) -> dict:
         goals = extract_list(response)
 
         if not goals:
-            return {"count": 0, "goals": [], "message": "No goals found for this member."}
+            return {"count": 0, "goals": [], "message": "No goals found for this client."}
 
         return {
             "count": len(goals),
@@ -49,7 +49,7 @@ async def get_member_goals(user_id: int, status: str = None) -> dict:
 
 
 @tool
-async def create_member_goal(
+async def create_client_goal(
     user_id: int,
     title: str,
     goal_type: str = "general_fitness",
@@ -58,12 +58,12 @@ async def create_member_goal(
     unit: str = None,
     target_date: str = None,
 ) -> dict:
-    """Create a new goal for a member.
+    """Create a new goal for a client.
 
     IMPORTANT: Only call this tool AFTER showing confirmation to the user and getting their approval.
 
     Args:
-        user_id: The user ID of the member (required)
+        user_id: The user ID of the client (required)
         title: Goal title (required)
         goal_type: Type - weight_loss, muscle_gain, general_fitness, sports_prep, rehab, flexibility, endurance, other (optional)
         description: Goal description (optional)
@@ -94,7 +94,7 @@ async def create_member_goal(
         response = await client.post("/member-goals", data)
         return {
             "success": True,
-            "message": f"Goal '{title}' created for member",
+            "message": f"Goal '{title}' created for client",
             "goal": response,
         }
     except Exception as e:
@@ -103,7 +103,7 @@ async def create_member_goal(
 
 @tool
 async def update_goal_progress(goal_id: int, current_value: float) -> dict:
-    """Update the current progress value for a member's goal.
+    """Update the current progress value for a client's goal.
 
     IMPORTANT: Only call this tool AFTER showing confirmation to the user and getting their approval.
 
